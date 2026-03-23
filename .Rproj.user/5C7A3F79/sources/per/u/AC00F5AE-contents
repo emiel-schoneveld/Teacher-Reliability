@@ -1,0 +1,21 @@
+library(DescTools)
+x <- letters[1:4]
+m <- 2
+
+x <- letters[1:3]
+y <- letters[4:6]
+z <- letters[7:9]
+
+CombPairs(x, y, z)
+CombSet(x, 2:3)
+
+rbind(CombPairs(x, y), CombPairs(x, z), CombPairs(y, z))
+expand.grid(x = x,
+            y = y,
+            z = z)
+
+?expand.grid
+
+paste0(x, y, z)
+
+

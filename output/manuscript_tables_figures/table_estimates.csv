@@ -1,0 +1,15 @@
+"Measure";"Rater";"Estimate";"SE";"95% CI"
+NA;"Intercept";NA;NA;NA
+"Length (minutes)";"Practice Log";"9.62";"0.41";"8.81 - 10.44"
+"Length (minutes)";"Teacher Report";"12.63";"0.45";"11.76 - 13.51"
+"Frequency (sessions per week)";"Practice Log";"2.15";"0.10";"1.96 - 2.34"
+"Frequency (sessions per week)";"Teacher Report";"3.10";"0.14";"2.83 - 3.36"
+"Duration (weeks)";"Practice Log";"15.22";"0.49";"14.26 - 16.19"
+"Duration (weeks)";"Teacher Report";"17.89";"0.34";"17.22 - 18.55"
+"Total Practice Time (hours)";"Practice Log";"5.52";"0.40";"4.73 - 6.31"
+"Total Practice Time (hours)";"Teacher Report";"12.22";"0.76";"10.73 - 13.70"
+NA;"Correlation";NA;NA;NA
+"Length (minutes)";NA;"0.40";"0.08";"0.24 - 0.55"
+"Frequency (sessions per week)";NA;"0.63";"0.08";"0.46 - 0.79"
+"Duration (weeks)";NA;"0.49";"0.10";"0.30 - 0.69"
+"Total Practice Time (hours)";NA;"0.57";"0.09";"0.39 - 0.74"

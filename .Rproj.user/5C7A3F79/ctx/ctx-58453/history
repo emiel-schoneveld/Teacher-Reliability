@@ -1,0 +1,26 @@
+# Exploratory analyses
+## by Emiel Schoneveld
+# General syntax ----
+## Clear environment
+rm(list = ls())
+## Load packages
+library(tidyverse)
+library(here)
+library(writexl)
+library(irr)
+# Load data ----
+## Wide data
+load(
+here('input/cleaned_data/data_wide.rds')
+)
+## Long data
+load(
+here('input/cleaned_data/data_long.rds')
+)
+data
+data$practice_duration_survey
+data$practice_type_survey
+data$practice_ciiwords_logs
+data$practice_length_survey
+data$practice_explanation_survey
+data$practice_ciitime_survey
