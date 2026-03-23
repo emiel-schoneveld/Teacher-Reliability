@@ -1,7 +1,7 @@
 ---
 title: "Teacher Accuracy and Reliability data"
 subtitle: "Teacher Reports vs Practice Logs"
-description: "This document shows the data used with the paper:\nOverestimated but Reliable: an Exploratory Analysis on Teacher Reported Dosage within a Reading Intervention"
+description: "This document shows the estimates fromt the analysis in the paper:\nOverestimated but Reliable: an Exploratory Analysis on Teacher Reported Dosage within a Reading Intervention"
 
 author: 
   name: 'Emiel Schoneveld'
@@ -11,21 +11,24 @@ author:
 keywords: "Teacher Report, Dosage, Reliability, Accuracy"
 date: today
 editor: source
-number-sections: true
+number-sections: false
 format:
   html:
     # embed-resources: true # used for making a standalone file, slow render but perfect for sharing
-    toc: true
-    code-fold: true
+    toc: false
+    code-fold: false
     code-summary: "Show the code"
     
 title-block-banner: "#f0f3f5"
 title-block-banner-color: "black"
+
+execute: 
+  warning: false
+  message: false
+  echo: false
 ---
 
 ```{r}
-#| echo: false
-
 # General syntax ----
 ## Clear environment
 rm(list = ls())
@@ -48,21 +51,16 @@ source(
 
 ```
 
-## Inspect the average estimates
+## Estimated reports
 ::: {.callout-note}
-length = session length in minutes
-freq = session frequency in sessions per week
-weeks = number of practice weeks
-ciitime = total practice time in hours
+length = session length in minutes; freq = session frequency in sessions per week; weeks = number of practice weeks; ciitime = total practice time in hours
 :::
 
 ```{r}
-#| echo: false
 results_intercepts |> datatable()
 ```
 
-## Inspect the estimated correlations
+## Estimated correlations
 ```{r}
-#| echo: false
 results_correlations |> datatable()
 ```

@@ -9,7 +9,7 @@
 <meta name="author" content="Emiel Schoneveld">
 <meta name="dcterms.date" content="2026-03-23">
 <meta name="keywords" content="Teacher Report, Dosage, Reliability, Accuracy">
-<meta name="description" content="This document shows the data used with the paper: Overestimated but Reliable: an Exploratory Analysis on Teacher Reported Dosage within a Reading Intervention">
+<meta name="description" content="This document shows the estimates fromt the analysis in the paper: Overestimated but Reliable: an Exploratory Analysis on Teacher Reported Dosage within a Reading Intervention">
 
 <title>Teacher Accuracy and Reliability data</title>
 <style>
@@ -58,7 +58,7 @@ background: #f0f3f5;
 
 </head>
 
-<body>
+<body class="fullcontent">
 
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
@@ -67,7 +67,7 @@ background: #f0f3f5;
             <p class="subtitle lead">Teacher Reports vs Practice Logs</p>
                   <div>
         <div class="description">
-          This document shows the data used with the paper: Overestimated but Reliable: an Exploratory Analysis on Teacher Reported Dosage within a Reading Intervention
+          This document shows the estimates fromt the analysis in the paper: Overestimated but Reliable: an Exploratory Analysis on Teacher Reported Dosage within a Reading Intervention
         </div>
       </div>
                 </div>
@@ -101,59 +101,17 @@ background: #f0f3f5;
     
   
   </header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-  <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#inspect-the-average-estimates" id="toc-inspect-the-average-estimates" class="nav-link active" data-scroll-target="#inspect-the-average-estimates"><span class="toc-section-number">1</span>  Inspect the average estimates</a></li>
-  <li><a href="#inspect-the-estimated-correlations" id="toc-inspect-the-estimated-correlations" class="nav-link" data-scroll-target="#inspect-the-estimated-correlations"><span class="toc-section-number">2</span>  Inspect the estimated correlations</a></li>
-  </ul>
-</nav>
-</div>
+
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'tidyverse' was built under R version 4.2.3</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'tibble' was built under R version 4.2.3</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'tidyr' was built under R version 4.2.3</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'readr' was built under R version 4.2.3</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'purrr' was built under R version 4.2.3</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'dplyr' was built under R version 4.2.3</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.4
-✔ forcats   1.0.0     ✔ stringr   1.5.0
-✔ ggplot2   3.5.2     ✔ tibble    3.2.1
-✔ lubridate 1.9.2     ✔ tidyr     1.3.1
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
-here() starts at C:/Users/RSCHONE/OneDrive - UvA/Promotie/Paper - teacher reliability/R project
 
-This is lavaan 0.6-21
-lavaan is FREE software! Please report any bugs.</code></pre>
 </div>
-</div>
-<section id="inspect-the-average-estimates" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="inspect-the-average-estimates"><span class="header-section-number">1</span> Inspect the average estimates</h2>
+<section id="estimated-reports" class="level2">
+<h2 class="anchored" data-anchor-id="estimated-reports">Estimated reports</h2>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -164,24 +122,24 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>length = session length in minutes freq = session frequency in sessions per week weeks = number of practice weeks ciitime = total practice time in hours</p>
+<p>length = session length in minutes; freq = session frequency in sessions per week; weeks = number of practice weeks; ciitime = total practice time in hours</p>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
 
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e3c148c615097fd49770" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-e3c148c615097fd49770">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8"],["length","length","freq","freq","weeks","weeks","ciitime","ciitime"],["logs","survey","logs","survey","logs","survey","logs","survey"],["9.62","12.63","2.15","3.10","15.22","17.89","5.52","12.22"],["0.41","0.45","0.10","0.14","0.49","0.34","0.40","0.76"],["8.81","11.76","1.96","2.83","14.26","17.22","4.73","10.73"],["10.44","13.51","2.34","3.36","16.19","18.55","6.31","13.70"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>measure<\/th>\n      <th>rater<\/th>\n      <th>estimate<\/th>\n      <th>se<\/th>\n      <th>lower_bound<\/th>\n      <th>upper_bound<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"measure","targets":1},{"name":"rater","targets":2},{"name":"estimate","targets":3},{"name":"se","targets":4},{"name":"lower_bound","targets":5},{"name":"upper_bound","targets":6}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-5ad1afdaab8ba89c203e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5ad1afdaab8ba89c203e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8"],["length","length","freq","freq","weeks","weeks","ciitime","ciitime"],["logs","survey","logs","survey","logs","survey","logs","survey"],["9.62","12.63","2.15","3.10","15.22","17.89","5.52","12.22"],["0.41","0.45","0.10","0.14","0.49","0.34","0.40","0.76"],["8.81","11.76","1.96","2.83","14.26","17.22","4.73","10.73"],["10.44","13.51","2.34","3.36","16.19","18.55","6.31","13.70"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>measure<\/th>\n      <th>rater<\/th>\n      <th>estimate<\/th>\n      <th>se<\/th>\n      <th>lower_bound<\/th>\n      <th>upper_bound<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"measure","targets":1},{"name":"rater","targets":2},{"name":"estimate","targets":3},{"name":"se","targets":4},{"name":"lower_bound","targets":5},{"name":"upper_bound","targets":6}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
-<section id="inspect-the-estimated-correlations" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="inspect-the-estimated-correlations"><span class="header-section-number">2</span> Inspect the estimated correlations</h2>
+<section id="estimated-correlations" class="level2">
+<h2 class="anchored" data-anchor-id="estimated-correlations">Estimated correlations</h2>
 <div class="cell">
 <div class="cell-output-display">
 
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bb2d735f3f172485aded" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-bb2d735f3f172485aded">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["length","freq","weeks","ciitime"],["0.40","0.63","0.49","0.57"],["0.08","0.08","0.10","0.09"],["0.24","0.46","0.30","0.39"],["0.55","0.79","0.69","0.74"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>measure<\/th>\n      <th>estimate<\/th>\n      <th>se<\/th>\n      <th>lower_bound<\/th>\n      <th>upper_bound<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"measure","targets":1},{"name":"estimate","targets":2},{"name":"se","targets":3},{"name":"lower_bound","targets":4},{"name":"upper_bound","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-50b7aaf37fc12dadd5c2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-50b7aaf37fc12dadd5c2">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["length","freq","weeks","ciitime"],["0.40","0.63","0.49","0.57"],["0.08","0.08","0.10","0.09"],["0.24","0.46","0.30","0.39"],["0.55","0.79","0.69","0.74"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>measure<\/th>\n      <th>estimate<\/th>\n      <th>se<\/th>\n      <th>lower_bound<\/th>\n      <th>upper_bound<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"measure","targets":1},{"name":"estimate","targets":2},{"name":"se","targets":3},{"name":"lower_bound","targets":4},{"name":"upper_bound","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
