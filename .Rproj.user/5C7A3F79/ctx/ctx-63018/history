@@ -1,0 +1,93 @@
+here::here()
+# General syntax ----
+## Clear environment
+rm(list = ls())
+## Load packages
+library(tidyverse)
+## Load packages
+library(tidyverse)
+library(here)
+library(lavaan)
+library(patchwork)
+# Load data ----
+source(
+here::here(
+'analyses/04_final_analyses.R'
+)
+)
+# Load data ----
+source(
+here::here(
+'analyses/04_final_analyses.R'
+)
+)
+# Load data ----
+source(
+here::here(
+'analyses/04_final_analyses.R'
+)
+)
+# Load data ----
+source(
+here::here(
+"C:/Users/RSCHONE/OneDrive - UvA/Promotie/Paper - teacher reliability/R project/analyses/04_final_analyses.R"
+)
+)
+here::here()
+here::here(
+"analyses/04_final_analyses.R"
+)
+# Load data ----
+source(
+here::here(
+"analyses/04_final_analyses.R"
+)
+)
+## Wide data
+load(
+here::here('input/cleaned_data/data_wide.rds')
+)
+source(
+here::here(
+"analyses/functions.R"
+)
+)
+# Load data ----
+source(
+here::here(
+"analyses/04_final_analyses.R"
+)
+)
+# Load data ----
+## Wide data
+load(
+here::here('input/cleaned_data/data_wide.rds')
+)
+data |>
+summarise(
+Age = age
+)
+data |>
+summarise(
+Age = mean(age, na.rm = T)
+)
+library(DT)
+datatable(data, filter = "top")
+source(
+here::here('analyses/04_final_analyses.R')
+)
+file.exists(
+here::here('analyses/04_final_analyses.R')
+)
+source(
+here::here('analyses/04_final_analyses.R')
+)
+here::here()                              # shows your project root
+here::here('analyses/04_final_analyses.R') # shows the full path it builds
+file.exists(here::here('analyses/04_final_analyses.R')) # confirms if R
+list.files(here::here('analyses'), pattern = "04_final")
+readLines(here::here('analyses/04_final_analyses.R'), n = 5)
+readLines(here::here('analyses/04_final_analyses.R'), n = 40)
+source(
+here::here('analyses/04_final_analyses.R')
+)

@@ -1,0 +1,58 @@
+---
+title: "Teacher Accuracy and Reliability data"
+subtitle: "Teacher Reports vs Practice Logs"
+description: "This document shows the data used with the paper:\nOverestimated but Reliable: an Exploratory Analysis on Teacher Reported Dosage within a Reading Intervention"
+
+author: 
+  name: 'Emiel Schoneveld'
+  affiliations:
+    name: 'University of Amsterdam'
+    
+keywords: "Teacher Report, Dosage, Reliability, Accuracy"
+date: today
+editor: source
+number-sections: true
+format:
+  html:
+    # embed-resources: true # used for making a standalone file, slow render but perfect for sharing
+    toc: true
+    code-fold: true
+    code-summary: "Show the code"
+    
+title-block-banner: "#f0f3f5"
+title-block-banner-color: "black"
+---
+
+```{r}
+#| echo: false
+
+# General syntax ----
+## Clear environment
+rm(list = ls())
+
+## Load packages
+library(tidyverse)
+library(here)
+library(lavaan)
+library(patchwork)
+library(DT)
+
+# Load data ----
+## Wide data
+load(
+  here::here('input/cleaned_data/data_wide.rds')
+)
+source(
+  here::here('analyses/04_final_analyses.R')
+)
+
+```
+
+## Inspect the data
+
+```{r}
+#| echo: false
+
+
+datatable(data, filter = "top")
+```
