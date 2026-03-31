@@ -25,10 +25,6 @@ common_theme <- theme_light() +
     axis.title.y = element_text(margin = margin(r = 10)),
     legend.text = element_text(size = 8),
     legend.title = element_text(size = 8),
-    # panel.background = element_rect(fill='#F5F5F3'), # poster background color
-    # plot.background = element_rect(fill='#F5F5F3'), # poster background color
-    # legend.background = element_rect(fill='#F5F5F3'), # poster background color
-    # legend.box.background = element_rect(fill='#F5F5F3') # poster background color
     )
 
 ## Define common visual parameters ----
@@ -273,14 +269,6 @@ ggsave(
     width = 7.1,
     height = 6
 )
-# 
-# ggsave(
-#   filename = here::here('output/manuscript_tables_figures/dotplot_poster.png'),
-#   dpi = 600,
-#   width = 7.1,
-#   height = 6,
-#   bg = '#F5F5F3'
-# )
 
 
 

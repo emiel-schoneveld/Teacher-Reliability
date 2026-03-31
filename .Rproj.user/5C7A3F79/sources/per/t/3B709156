@@ -1,25 +1,27 @@
 {
-    "id": "FF56525A",
+    "id": "3B709156",
     "path": "C:/Users/RSCHONE/OneDrive - UvA/Promotie/Paper - teacher reliability/R project/quarto-report/teacher-reliability-report.qmd",
     "project_path": "quarto-report/teacher-reliability-report.qmd",
     "type": "quarto_markdown",
-    "hash": "2016874193",
+    "hash": "4444383",
     "contents": "",
     "dirty": false,
-    "created": 1774267158726.0,
+    "created": 1774270039019.0,
     "source_on_save": false,
     "relative_order": 1,
     "properties": {
         "rmdVisualMode": "false",
         "source_window_id": "",
-        "Source": "Source"
+        "Source": "Source",
+        "cursorPosition": "10,31",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1774266747,
+    "lastKnownWriteTime": 1774270856,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1774266747,
+    "last_content_update": 1774270856499,
     "read_only": false,
     "read_only_alternatives": []
 }
