@@ -454,3 +454,23 @@ table_estimates <- table_estimates |>
 #   )
 # 
 # View(table_estimates)
+
+# Multilevel try ----
+library(lme4)
+library(psych)
+library(performance)
+
+model_length_logs <- lmer(
+  practice_length_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+  )
+
+model_logs <- model_length_log
+model_survey <- model_length_survey
+model_survey
+
+
+model_length_survey <- lmer(
+  practice_length_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+  )

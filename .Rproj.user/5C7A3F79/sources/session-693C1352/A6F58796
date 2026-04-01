@@ -1,0 +1,27 @@
+{
+    "id": "A6F58796",
+    "path": "C:/Users/RSCHONE/OneDrive - UvA/Promotie/Paper - teacher reliability/R project/analyses/functions.R",
+    "project_path": "analyses/functions.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1775033406582.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "302,0",
+        "scrollLine": "278"
+    },
+    "folds": "3|62|37|0|\n39|38|71|0|\n45|3|70|0|\n72|31|150|0|\n78|3|149|0|\n79|39|107|2|\n108|13|146|2|\n147|23|148|21|\n151|32|171|0|\n156|3|169|0|\n",
+    "lastKnownWriteTime": 1775033569,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1775033569379,
+    "read_only": false,
+    "read_only_alternatives": []
+}
