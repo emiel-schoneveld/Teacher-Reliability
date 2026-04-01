@@ -460,7 +460,7 @@ library(lme4)
 library(psych)
 library(performance)
 
-# Length
+# Length ----
 ML_length_logs <- lmer(
   practice_length_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
@@ -476,8 +476,83 @@ vars_length <- decompose_variance(
   model_survey = ML_length_survey,
   measure = 'length'
 )
+# performance::check_model(ML_length_survey)
 
-# Frequency
+
+# correlations
+data |> 
+  group_by(
+    school_ID
+  ) |> 
+  summarise(
+    survey_mean = mean(practice_length_survey, na.rm = T),
+    logs_mean = mean(practice_length_logs, na.rm = T),
+  ) |> 
+  dplyr::select(
+    contains('mean')
+  ) |> cor()
+cor(
+  coef(ML_length_logs)$`school_ID`,
+  coef(ML_length_survey)$`school_ID`
+)
+data |> 
+  group_by(
+    group_ID
+  ) |> 
+  summarise(
+    survey_mean = mean(practice_length_survey, na.rm = T),
+    logs_mean = mean(practice_length_logs, na.rm = T),
+  ) |> 
+  dplyr::select(
+    contains('mean')
+  ) |> cor()
+cor(
+  coef(ML_length_logs)$`school_ID:group_ID`,
+  coef(ML_length_survey)$`school_ID:group_ID`
+  )
+
+data |> 
+  dplyr::select(
+    contains('length') 
+  ) |> cor()
+cor(
+  resid(ML_length_logs),
+  resid(ML_length_survey)
+)
+
+ML_length_survey_logs <- lmer(
+  practice_length_survey ~ practice_length_logs + 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+)
+ML_length_logs_survey <- lmer(
+  practice_length_logs ~ 1 + practice_length_survey + (1  +practice_length_survey | school_ID) + (1 + practice_length_survey | school_ID:group_ID),
+  data = data
+)
+vars_length
+summary(ML_length_logs, correlation = T)
+mod_sem_length <- '
+level: 1
+    practice_length_logs ~~ practice_length_survey
+
+  level: 2
+    practice_length_logs ~~ practice_length_survey
+
+  level: 3
+    practice_length_logs ~~ practice_length_survey
+'
+fit_sem_length <- sem(
+  mod_sem_length,
+  data = data,
+  cluster = c("school_ID", "group_ID"),
+  estimator = "MLR"
+)
+summary(fit_sem_length)
+
+
+
+
+
+# Frequency ----
 ML_freq_logs <- lmer(
   practice_freq_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
@@ -539,7 +614,7 @@ vars_length |>
     aes(
       x = Model,
       y = ICC,
-      fill = fct_rev(Group)
+      fill = Group
     )
   ) +
   geom_bar(
@@ -569,3 +644,5 @@ vars_length |>
   facet_wrap(
     ~Measure
   )
+
+
