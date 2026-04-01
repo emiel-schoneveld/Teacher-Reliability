@@ -173,7 +173,8 @@ confidence_interval <- function(
 # Decomposing variance from intercept only lmer model
 decompose_variance <- function(
     model_logs = NA,
-    model_survey = NA
+    model_survey = NA,
+    measure = NA
 ) {
   # Calculate variance and stt.dev per level
   var_logs <- summary(model_logs)$varcor |> 
@@ -288,10 +289,11 @@ decompose_variance <- function(
       Group = factor(
         Group, 
         levels = c('school_ID', 'school_ID:group_ID', 'Residual')
-      )
+      ),
+      Measure = measure
     ) |> 
     relocate(
-      Model
+      Measure, Model
     ) |> 
     arrange(
       Model, Group

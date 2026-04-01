@@ -460,17 +460,112 @@ library(lme4)
 library(psych)
 library(performance)
 
-model_length_logs <- lmer(
+# Length
+ML_length_logs <- lmer(
   practice_length_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
   )
 
-model_length_survey <- lmer(
+ML_length_survey <- lmer(
   practice_length_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
   )
 
-decompose_variance(
-  model_logs = model_length_logs,
-  model_survey = model_length_survey
+vars_length <- decompose_variance(
+  model_logs = ML_length_logs,
+  model_survey = ML_length_survey,
+  measure = 'length'
 )
+
+# Frequency
+ML_freq_logs <- lmer(
+  practice_freq_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+)
+
+ML_freq_survey <- lmer(
+  practice_freq_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+)
+
+vars_freq <- decompose_variance(
+  model_logs = ML_freq_logs,
+  model_survey = ML_freq_survey,
+  measure = 'frequency'
+)
+
+# Duration
+ML_weeks_logs <- lmer(
+  practice_weeks_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+)
+
+ML_weeks_survey <- lmer(
+  practice_weeks_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+)
+
+vars_weeks <- decompose_variance(
+  model_logs = ML_weeks_logs,
+  model_survey = ML_weeks_survey,
+  measure = 'weeks'
+)
+
+# ciitime
+ML_ciitime_logs <- lmer(
+  practice_ciitime_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+)
+
+ML_ciitime_survey <- lmer(
+  practice_ciitime_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
+  data = data
+)
+
+vars_ciitime <- decompose_variance(
+  model_logs = ML_ciitime_logs,
+  model_survey = ML_ciitime_survey,
+  measure = 'ciitime'
+)
+
+vars_length |> 
+  bind_rows(
+    vars_freq,
+    vars_weeks,
+    vars_ciitime
+  ) |>
+  # Stacked barplot
+  ggplot(
+    aes(
+      x = Model,
+      y = ICC,
+      fill = fct_rev(Group)
+    )
+  ) +
+  geom_bar(
+    position = "stack",
+    stat = 'identity'
+  ) +
+  
+  # Dodges barplot
+  # ggplot(
+  #   aes(
+  #     fill = Model,
+  #     y = ICC,
+  #     x = Group
+  #   )
+  # ) +
+  # geom_bar(
+  #   position = 'dodge',
+  #   stat = 'identity'
+  # ) +
+  
+  
+  scale_y_continuous(
+    labels = scales::percent,
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.20)
+    ) +
+  facet_wrap(
+    ~Measure
+  )
