@@ -461,6 +461,9 @@ library(psych)
 library(performance)
 
 # Length ----
+data_long |> 
+  
+
 ML_length_logs <- lmer(
   practice_length_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
@@ -646,3 +649,102 @@ vars_length |>
   )
 
 
+### -----
+library(nlme)
+data_long <- data |>
+  pivot_longer(
+    cols = c(practice_length_logs, practice_length_survey),
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  mutate(
+    # Dummy indicators for each variable (for the mean structure)
+    is_logs   = as.numeric(variable == "practice_length_logs"),
+    is_survey = as.numeric(variable == "practice_length_survey")
+  )
+
+# --- Fit bivariate 3-level model ---
+model_length_lme <- lme(
+  fixed = value ~ 0 + is_logs + is_survey,   # separate intercepts, no shared intercept
+  random = list(
+    school_ID  = pdSymm(~ 0 + is_logs + is_survey),  # 2x2 cov matrix at school level
+    group_ID = pdSymm(~ 0 + is_logs + is_survey)   # 2x2 cov matrix at teacher level
+  ),
+  weights = varIdent(form = ~ 1 | variable),       # allow different residual variances
+  data = data_long,
+  control = lmeControl(opt = "optim", maxIter = 200, msMaxIter = 200)
+)
+
+summary(model_length_lme)
+
+# --------------
+library(brms)
+
+
+
+# --- Fit bivariate 3-level model ---
+# bf() defines each outcome separately; share random effects across levels
+formula_logs <- bf(practice_length_logs ~ 1 + 
+                     (1 | p | school_ID) +          # school level
+                     (1 | q | group_ID))   # teacher level
+
+formula_survey <- bf(practice_length_survey ~ 1 + 
+                       (1 | p | school_ID) +        # school level
+                       (1 | q | group_ID)) # teacher level
+
+prior_brms <- c(
+  prior(lkj(4), class = cor, group = school_ID),
+  prior(lkj(1), class = cor, group = group_ID)
+)
+# The "p" label in | p | tells brms to estimate the *covariance*
+# between random effects sharing the same label across the two formulas
+
+# model_test <- brm(
+#   formula = formula_logs + formula_survey + set_rescor(TRUE),
+#   data = data,
+#   chains = 1,
+#   iter = 500,
+#   warmup = 100,
+#   seed = 42
+# )
+
+Sys.time()
+model_brms <- brm(
+  formula = formula_logs + formula_survey + set_rescor(TRUE),
+  data = data,
+  prior = prior_brms,
+  chains = 4,
+  cores = 4,
+  iter = 4000,
+  warmup = 1000,
+  seed = 42,
+  control = list(adapt_delta = 0.99, max_treedepth = 15)  # default is 0.80, try 0.95 or 0.99
+)
+Sys.time()
+
+summary(model_brms)
+pairs(model_brms,
+      variable = c(
+        "cor_group_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept" ,
+        "cor_school_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept",
+        "rescor__practicelengthlogs__practicelengthsurvey" 
+      ))
+
+# --- Extract level-specific correlations ---
+# All correlations are in the summary under "Group-Level Effects"
+# and "Family Specific Parameters" (rescor = residual/student-level cor)
+
+# Tidy extraction:
+library(tidybayes)
+
+# School-level correlation
+spread_draws(model_brms, cor_school__practicelengthlog_Intercept__practicelengthsurvey_Intercept)
+
+# Teacher-level correlation (teacher nested in school)
+spread_draws(model_brms, cor_group_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept) |>
+  summarise(
+    mean(cor_group_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept, na.rm = T)
+  )
+
+# Student-level (residual) correlation
+spread_draws(model_brms, rescor__practicelengthlog__practicelengthsurvey)
