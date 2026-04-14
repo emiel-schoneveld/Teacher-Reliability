@@ -461,8 +461,7 @@ library(psych)
 library(performance)
 
 # Length ----
-data_long |> 
-  
+
 
 ML_length_logs <- lmer(
   practice_length_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
@@ -680,8 +679,6 @@ summary(model_length_lme)
 # --------------
 library(brms)
 
-
-
 # --- Fit bivariate 3-level model ---
 # bf() defines each outcome separately; share random effects across levels
 formula_logs <- bf(practice_length_logs ~ 1 + 
@@ -708,43 +705,86 @@ prior_brms <- c(
 #   seed = 42
 # )
 
-Sys.time()
-model_brms <- brm(
-  formula = formula_logs + formula_survey + set_rescor(TRUE),
-  data = data,
-  prior = prior_brms,
-  chains = 4,
-  cores = 4,
-  iter = 4000,
-  warmup = 1000,
-  seed = 42,
-  control = list(adapt_delta = 0.99, max_treedepth = 15)  # default is 0.80, try 0.95 or 0.99
-)
-Sys.time()
-
+time_begin <- Sys.time()
+# model_brms <- brm(
+#   formula = formula_logs + formula_survey + set_rescor(TRUE),
+#   data = data,
+#   prior = prior_brms,
+#   chains = 4,
+#   cores = 4,
+#   iter = 4000,
+#   warmup = 1000,
+#   seed = 42,
+#   control = list(adapt_delta = 0.99, max_treedepth = 15)  # default is 0.80, try 0.95 or 0.99
+# )
+time_end <- Sys.time()
+time_end - time_begin
+here::here()
+# save(
+#   model_brms,
+#   file = here::here('output/model_brms.RData')
+# )
+load(here::here('output/model_brms.RData'))
 summary(model_brms)
-pairs(model_brms,
-      variable = c(
-        "cor_group_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept" ,
-        "cor_school_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept",
-        "rescor__practicelengthlogs__practicelengthsurvey" 
-      ))
+# pairs(model_brms,
+#       variable = c(
+#         "cor_group_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept" ,
+#         "cor_school_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept",
+#         "rescor__practicelengthlogs__practicelengthsurvey" 
+#       ))
 
-# --- Extract level-specific correlations ---
-# All correlations are in the summary under "Group-Level Effects"
-# and "Family Specific Parameters" (rescor = residual/student-level cor)
+# --- Extract posterior draws for all SD parameters ---
+draws <- as_draws_df(model_brms)
 
-# Tidy extraction:
-library(tidybayes)
-
-# School-level correlation
-spread_draws(model_brms, cor_school__practicelengthlog_Intercept__practicelengthsurvey_Intercept)
-
-# Teacher-level correlation (teacher nested in school)
-spread_draws(model_brms, cor_group_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept) |>
-  summarise(
-    mean(cor_group_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept, na.rm = T)
+# --- For practice_length_logs ---
+draws <- draws |>
+  mutate(
+    # Variance components for logs
+    var_school_logs   = sd_school_ID__practicelengthlogs_Intercept^2,
+    var_teacher_logs  = sd_group_ID__practicelengthlogs_Intercept^2,
+    var_student_logs  = sigma_practicelengthlogs^2,
+    var_total_logs    = var_school_logs + var_teacher_logs + var_student_logs,
+    
+    # ICCs for logs
+    icc_school_logs   = var_school_logs  / var_total_logs,
+    icc_teacher_logs  = var_teacher_logs / var_total_logs,
+    icc_student_logs  = var_student_logs / var_total_logs,
+    
+    # Variance components for survey
+    var_school_survey  = sd_school_ID__practicelengthsurvey_Intercept^2,
+    var_teacher_survey = sd_group_ID__practicelengthsurvey_Intercept^2,
+    var_student_survey = sigma_practicelengthsurvey^2,
+    var_total_survey   = var_school_survey + var_teacher_survey + var_student_survey,
+    
+    # ICCs for survey
+    icc_school_survey  = var_school_survey  / var_total_survey,
+    icc_teacher_survey = var_teacher_survey / var_total_survey,
+    icc_student_survey = var_student_survey / var_total_survey
   )
 
-# Student-level (residual) correlation
-spread_draws(model_brms, rescor__practicelengthlog__practicelengthsurvey)
+# --- Summarise posterior distributions of ICCs ---
+icc_summary <- draws |>
+  as_tibble() |> 
+  select(starts_with("icc_")) |>
+  pivot_longer(everything(), names_to = "parameter", values_to = "value") |>
+  group_by(parameter) |>
+  summarise(
+    mean     = mean(value),
+    median   = median(value),
+    sd       = sd(value),
+    ci_lower = quantile(value, 0.025),
+    ci_upper = quantile(value, 0.975)
+  ) |>
+  # Clean up parameter names for readability
+  mutate(
+    variable = ifelse(str_detect(parameter, "logs"), "practice_length_logs", "practice_length_survey"),
+    level    = case_when(
+      str_detect(parameter, "school")   ~ "School",
+      str_detect(parameter, "teacher")  ~ "Teacher",
+      str_detect(parameter, "student")  ~ "Student"
+    )
+  ) |>
+  select(variable, level, mean, median, sd, ci_lower, ci_upper)
+
+icc_summary |> 
+  arrange(variable)

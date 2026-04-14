@@ -1,0 +1,58 @@
+# Final analyses
+## by Emiel Schoneveld
+
+# General syntax ----
+## Clear environment
+rm(list = ls())
+
+## Load packages
+library(tidyverse)
+library(here)
+library(lavaan)
+library(patchwork)
+
+## Source functions
+source(
+  here::here(
+    'analyses/functions.R'
+  )
+)
+
+# Load data ----
+## Wide data
+load(
+  here::here('input/cleaned_data/data_wide.rds')
+)
+
+library(brms)
+
+# --- Fit bivariate 3-level model ---
+# bf() defines each outcome separately; share random effects across levels
+formula_logs <- bf(practice_length_logs ~ 1 + 
+                     (1 | p | school_ID) +          # school level
+                     (1 | q | group_ID))   # teacher level
+
+formula_survey <- bf(practice_length_survey ~ 1 + 
+                       (1 | p | school_ID) +        # school level
+                       (1 | q | group_ID)) # teacher level
+
+prior_brms <- c(
+  prior(lkj(4), class = cor, group = school_ID),
+  prior(lkj(1), class = cor, group = group_ID)
+)
+# The "p" label in | p | tells brms to estimate the *covariance*
+# between random effects sharing the same label across the two formulas
+
+
+model_brms <- brm(
+  formula = formula_logs + formula_survey + set_rescor(TRUE),
+  data = data,
+  prior = prior_brms,
+  chains = 4,
+  cores = 4,
+  iter = 4000,
+  warmup = 1000,
+  seed = 42,
+  control = list(adapt_delta = 0.99, max_treedepth = 15)  # default is 0.80, try 0.95 or 0.99
+)
+
