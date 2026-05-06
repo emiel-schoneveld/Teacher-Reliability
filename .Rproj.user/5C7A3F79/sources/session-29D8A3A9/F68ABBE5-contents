@@ -1,0 +1,16 @@
+vars_length |> 
+  mutate(
+    Group = as_factor(Group) |> fct_relevel('Residual', 'school_ID:group_ID', 'school_ID')
+  ) |> 
+  ggplot(
+    aes(
+      x = Model,
+      y = ICC,
+      fill = Group
+    )
+  ) +
+  geom_bar(
+    stat = "identity",
+    position = "stack"
+  ) +
+  ggtitle('multilevel')

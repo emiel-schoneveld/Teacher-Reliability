@@ -472,7 +472,7 @@ ML_length_survey <- lmer(
   practice_length_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
   )
-
+summary(ML_length_survey)
 vars_length <- decompose_variance(
   model_logs = ML_length_logs,
   model_survey = ML_length_survey,
@@ -676,11 +676,10 @@ model_length_lme <- lme(
 
 summary(model_length_lme)
 
-# --------------
+# bayesian try --------------
 library(brms)
 
-
-
+## Bayesian length ----
 # --- Fit bivariate 3-level model ---
 # bf() defines each outcome separately; share random effects across levels
 formula_logs <- bf(practice_length_logs ~ 1 + 
@@ -717,7 +716,7 @@ time_begin <- Sys.time()
 #   iter = 4000,
 #   warmup = 1000,
 #   seed = 42,
-#   control = list(adapt_delta = 0.99, max_treedepth = 15)  # default is 0.80, try 0.95 or 0.99
+#   control = list(adapt_delta = 0.99, max_treedepth = 15)
 # )
 time_end <- Sys.time()
 time_end - time_begin
@@ -734,3 +733,78 @@ summary(model_brms)
 #         "cor_school_ID__practicelengthlogs_Intercept__practicelengthsurvey_Intercept",
 #         "rescor__practicelengthlogs__practicelengthsurvey" 
 #       ))
+
+# --- Extract posterior draws for all SD parameters ---
+draws <- as_draws_df(model_brms)
+
+# --- For practice_length_logs ---
+draws <- draws |>
+  mutate(
+    # Variance components for logs
+    var_school_logs   = sd_school_ID__practicelengthlogs_Intercept^2,
+    var_teacher_logs  = sd_group_ID__practicelengthlogs_Intercept^2,
+    var_student_logs  = sigma_practicelengthlogs^2,
+    var_total_logs    = var_school_logs + var_teacher_logs + var_student_logs,
+    
+    # ICCs for logs
+    icc_school_logs   = var_school_logs  / var_total_logs,
+    icc_teacher_logs  = var_teacher_logs / var_total_logs,
+    icc_student_logs  = var_student_logs / var_total_logs,
+    
+    # Variance components for survey
+    var_school_survey  = sd_school_ID__practicelengthsurvey_Intercept^2,
+    var_teacher_survey = sd_group_ID__practicelengthsurvey_Intercept^2,
+    var_student_survey = sigma_practicelengthsurvey^2,
+    var_total_survey   = var_school_survey + var_teacher_survey + var_student_survey,
+    
+    # ICCs for survey
+    icc_school_survey  = var_school_survey  / var_total_survey,
+    icc_teacher_survey = var_teacher_survey / var_total_survey,
+    icc_student_survey = var_student_survey / var_total_survey
+  )
+
+# --- Summarise posterior distributions of ICCs ---
+icc_summary <- draws |>
+  as_tibble() |> 
+  select(starts_with("icc_")) |>
+  pivot_longer(everything(), names_to = "parameter", values_to = "value") |>
+  group_by(parameter) |>
+  summarise(
+    mean     = mean(value),
+    median   = median(value),
+    sd       = sd(value),
+    ci_lower = quantile(value, 0.025),
+    ci_upper = quantile(value, 0.975),
+  ) |>
+  # Clean up parameter names for readability
+  mutate(
+    variable = ifelse(str_detect(parameter, "logs"), "practice_length_logs", "practice_length_survey"),
+    level    = case_when(
+      str_detect(parameter, "school")   ~ "School",
+      str_detect(parameter, "teacher")  ~ "Teacher",
+      str_detect(parameter, "student")  ~ "Student"
+    )
+  ) |>
+  select(variable, level, mean, median, sd, ci_lower, ci_upper)
+
+icc_summary |> 
+  arrange(
+    level, 
+    variable
+    ) |> 
+  mutate(
+    level = as_factor(level) |> fct_relevel('Student', 'Teacher', 'School')
+  ) |> 
+  ggplot(
+    aes(
+      x = variable,
+      y = mean,
+      fill = level
+    )
+  ) +
+  geom_bar(
+    stat = "identity",
+    position = "stack"
+    ) +
+  ggtitle('bayesian')
+  
