@@ -1,27 +1,27 @@
 {
-    "id": "62D857CC",
+    "id": "3DDE4F86",
     "path": "C:/Users/RSCHONE/OneDrive - UvA/Promotie/Paper - teacher reliability/R project/analyses/04_final_analyses.R",
     "project_path": "analyses/04_final_analyses.R",
     "type": "r_source",
-    "hash": "216170282",
+    "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1776154595269.0,
+    "created": 1778147140998.0,
     "source_on_save": false,
     "relative_order": 1,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "742,60",
-        "scrollLine": "734"
+        "cursorPosition": "25,5",
+        "scrollLine": "17"
     },
-    "folds": "3|17|19|0|\n20|12|25|0|\n26|42|32|0|\n33|23|33|27|\n34|32|125|0|\n126|44|126|48|\n127|10|169|0|\n170|8|212|0|\n213|9|255|0|\n256|11|298|0|\n299|41|299|45|\n300|16|344|0|\n345|14|389|0|\n390|24|393|0|\n394|29|394|33|\n395|18|456|0|\n457|17|461|0|\n462|9|555|0|\n556|12|649|0|\n650|4|677|0|\n",
-    "lastKnownWriteTime": 1776155355,
+    "folds": "",
+    "lastKnownWriteTime": 1778147579,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1776155355284,
+    "last_content_update": 1778147579285,
     "read_only": false,
     "read_only_alternatives": []
 }

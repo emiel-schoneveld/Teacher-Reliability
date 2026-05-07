@@ -23,6 +23,9 @@ source(
 load(
   here::here('input/cleaned_data/data_wide.rds')
 )
+load(
+  here::here('input/cleaned_data/data_long.rds')
+)
 
 # Fidelity analysis easy fix by filtering ----
 # data <- data |> 
@@ -472,7 +475,7 @@ ML_length_survey <- lmer(
   practice_length_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
   )
-
+summary(ML_length_survey)
 vars_length <- decompose_variance(
   model_logs = ML_length_logs,
   model_survey = ML_length_survey,
@@ -676,9 +679,10 @@ model_length_lme <- lme(
 
 summary(model_length_lme)
 
-# --------------
+# bayesian try --------------
 library(brms)
 
+## Bayesian length ----
 # --- Fit bivariate 3-level model ---
 # bf() defines each outcome separately; share random effects across levels
 formula_logs <- bf(practice_length_logs ~ 1 + 
@@ -715,7 +719,7 @@ time_begin <- Sys.time()
 #   iter = 4000,
 #   warmup = 1000,
 #   seed = 42,
-#   control = list(adapt_delta = 0.99, max_treedepth = 15)  # default is 0.80, try 0.95 or 0.99
+#   control = list(adapt_delta = 0.99, max_treedepth = 15)
 # )
 time_end <- Sys.time()
 time_end - time_begin
@@ -773,7 +777,7 @@ icc_summary <- draws |>
     median   = median(value),
     sd       = sd(value),
     ci_lower = quantile(value, 0.025),
-    ci_upper = quantile(value, 0.975)
+    ci_upper = quantile(value, 0.975),
   ) |>
   # Clean up parameter names for readability
   mutate(
@@ -787,4 +791,23 @@ icc_summary <- draws |>
   select(variable, level, mean, median, sd, ci_lower, ci_upper)
 
 icc_summary |> 
-  arrange(variable)
+  arrange(
+    level, 
+    variable
+    ) |> 
+  mutate(
+    level = as_factor(level) |> fct_relevel('Student', 'Teacher', 'School')
+  ) |> 
+  ggplot(
+    aes(
+      x = variable,
+      y = mean,
+      fill = level
+    )
+  ) +
+  geom_bar(
+    stat = "identity",
+    position = "stack"
+    ) +
+  ggtitle('bayesian')
+  

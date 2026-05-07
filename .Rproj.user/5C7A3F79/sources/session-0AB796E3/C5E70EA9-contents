@@ -1,0 +1,9 @@
+data_long |>
+  filter(
+    measure == "weeks"
+  )
+
+
+data$practice_duration_survey
+data$practice_duration_logs
+data$practice_length_logs

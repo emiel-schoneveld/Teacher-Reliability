@@ -23,6 +23,9 @@ source(
 load(
   here::here('input/cleaned_data/data_wide.rds')
 )
+load(
+  here::here('input/cleaned_data/data_long.rds')
+)
 
 # Fidelity analysis easy fix by filtering ----
 # data <- data |> 
