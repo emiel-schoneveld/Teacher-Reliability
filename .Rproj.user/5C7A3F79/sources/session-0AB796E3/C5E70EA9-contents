@@ -6,4 +6,45 @@ data_long |>
 
 data$practice_duration_survey
 data$practice_duration_logs
-data$practice_length_logs
+
+data_duration <- data |> 
+  dplyr::select(
+    contains('ID'),
+    contains('duration')
+  ) |> 
+  mutate(
+    practice_duration_survey_numerical =
+      case_when(
+        practice_duration_survey == 'No practice' ~ 0,
+        practice_duration_survey == 'Less than 1 month' ~ 0.5,
+        practice_duration_survey == '1-2 months' ~ 1,
+        practice_duration_survey == '3-4 months' ~ 3,
+        practice_duration_survey == 'Complete period' ~ 5,
+      ),
+    practice_duration_logs_numerical =
+      case_when(
+        practice_duration_logs == 'No practice' ~ 0,
+        practice_duration_logs == 'Less than 1 month' ~ 0.5,
+        practice_duration_logs == '1-2 months' ~ 1,
+        practice_duration_logs == '3-4 months' ~ 3,
+        practice_duration_logs == 'Complete period' ~ 5,
+      ),
+    practice_duration_survey_correct = practice_duration_logs == practice_duration_survey,
+    practice_duration_survey_estimation = case_when(
+      practice_duration_survey_numerical > practice_duration_logs_numerical ~ 'Overestimate',
+      practice_duration_survey_numerical < practice_duration_logs_numerical ~ 'Underestimate',
+      practice_duration_survey_numerical == practice_duration_logs_numerical ~ 'Correct Estimate',
+    )
+  )
+
+data_duration |> 
+  summarise(
+    GM_accuracy = mean(practice_duration_survey_correct)
+  )
+
+data_duration |>
+  ggplot(
+    aes(
+      y = practice_duration_logs
+    )
+  )

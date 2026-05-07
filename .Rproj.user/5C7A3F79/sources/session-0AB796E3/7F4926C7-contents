@@ -357,7 +357,7 @@ data_logs_student <- data_logs_session |>
   ) |>
   dplyr::select(
     student_ID, 
-    contains('practice_duration_logs') & !contains('months')
+    contains('practice_duration_logs')
   ) |> 
   right_join(
     y = data_logs_student
