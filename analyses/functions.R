@@ -302,9 +302,3 @@ decompose_variance <- function(
   # Return results
   return(results_combined)
 }
-
-# Round to nearest number
-round_to <- function(x, base = 0.25) {
-  result <- round(x / base) * base
-  return(result)
-}

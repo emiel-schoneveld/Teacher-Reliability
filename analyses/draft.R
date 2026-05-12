@@ -66,8 +66,8 @@ data_duration |>
 
 data_duration |>
   mutate(
-    practice_duration_logs_months = round(
-      practice_duration_logs_months, 0.5
+    practice_duration_logs_months = round_to(
+      practice_duration_logs_months, 
       )
     ) |> 
   ggplot(
