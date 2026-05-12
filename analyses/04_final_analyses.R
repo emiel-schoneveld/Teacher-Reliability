@@ -464,8 +464,6 @@ library(psych)
 library(performance)
 
 # Length ----
-
-
 ML_length_logs <- lmer(
   practice_length_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
@@ -475,7 +473,7 @@ ML_length_survey <- lmer(
   practice_length_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
   )
-summary(ML_length_survey)
+
 vars_length <- decompose_variance(
   model_logs = ML_length_logs,
   model_survey = ML_length_survey,
@@ -811,3 +809,104 @@ icc_summary |>
     ) +
   ggtitle('bayesian')
   
+# multilevel with standardised effects to estimate correlation ----
+## Scale data
+data_decomposed <- data |>
+  # --- L3 components (school means) ---
+  group_by(school_ID) |>
+  mutate(
+    practice_length_survey_L3 = mean(practice_length_survey, na.rm = T),
+    practice_length_logs_L3 = mean(practice_length_logs, na.rm = T)
+  ) |>
+  # --- L2 components (group means, school-mean centred) ---
+  group_by(school_ID, group_ID) |>
+  mutate(
+    practice_length_survey_L2 = mean(practice_length_survey, na.rm = T) - practice_length_survey_L3,
+    practice_length_logs_L2 = mean(practice_length_logs, na.rm = T) - practice_length_logs_L3,
+    # --- L1 components (within-group deviations) ---
+    practice_length_survey_L1 = practice_length_survey - mean(practice_length_survey, na.rm = T),
+    practice_length_logs_L1 = practice_length_logs - mean(practice_length_logs, na.rm = T)
+  ) |>
+  ungroup()
+
+data_decomposed <- data_decomposed |>
+  mutate(
+    # Standardise each level's component by that level's SD
+    practice_length_survey_L1_z = practice_length_survey_L1 / sd(practice_length_survey_L1, na.rm = T),
+    practice_length_survey_L2_z = practice_length_survey_L2 / sd(practice_length_survey_L2, na.rm = T),
+    practice_length_survey_L3_z = practice_length_survey_L3 / sd(practice_length_survey_L3, na.rm = T),
+    
+    practice_length_logs_L1_z = practice_length_logs_L1 / sd(practice_length_logs_L1, na.rm = T),
+    practice_length_logs_L2_z = practice_length_logs_L2 / sd(practice_length_logs_L2, na.rm = T),
+    practice_length_logs_L3_z = practice_length_logs_L3 / sd(practice_length_logs_L3, na.rm = T)
+  )
+library(lme4)
+library(sandwich)
+library(lmtest)
+
+# L1: within-class effect
+fit_L1 <- lm(practice_length_logs_L1_z ~ practice_length_survey_L1_z,
+               data = data_decomposed)
+coefci(fit_L1,
+       vcov = vcovCL(fit_L1, cluster = ~ school_ID/group_ID),
+       level = 0.95)["practice_length_survey_L1_z", ]
+
+# L2: between-class, within-school effect
+fit_L2 <- lm(practice_length_logs_L2_z ~  practice_length_survey_L2_z,
+               data = data_decomposed)
+coefci(fit_L2,
+       vcov = vcovCL(fit_L2, cluster = ~ school_ID),
+       level = 0.95)["practice_length_survey_L2_z", ]
+
+# L3: between-school effect
+fit_L3 <- lm(practice_length_logs_L3_z ~ practice_length_survey_L3_z, 
+             data = data_decomposed |> 
+               distinct(school_ID, .keep_all = TRUE)
+             )
+confint(fit_L3, level = 0.95)["practice_length_survey_L3_z", ]
+
+# refitting multilevel model ----
+library(lme4)
+library(effectsize)
+
+fit <- lmer(practice_length_logs ~ 1 + practice_length_survey + (1 | school_ID/group_ID), data = data)
+
+standardize_parameters(fit, method = "refit")
+summary(fit)
+
+
+# multilevel SEM model ---- 
+library(lavaan)
+
+model <- '
+  # Level 1 (within-group)
+  level: 1
+    practice_length_logs ~ practice_length_survey
+
+  # Level 2 (between-groups, within-school)
+  level: 2
+    practice_length_logs ~ practice_length_survey
+
+  # Level 3 (between-school)
+  level: 3
+    practice_length_logs ~ practice_length_survey
+'
+
+fit <- sem(
+  model,
+  data      = data,
+  cluster   = c("school_ID", "group_ID"),  # L3 and L2 clustering variables
+  estimator = "MLR"                         # robust maximum likelihood
+)
+
+summary(fit, fit.measures = TRUE, standardized = TRUE)
+
+data |>
+  group_by(school_ID, group_ID) |>
+  summarise(
+    var_survey = var(practice_length_survey, na.rm = TRUE),
+    n          = n()
+  ) |>
+  filter(var_survey == 0 | is.na(var_survey))
+
+
