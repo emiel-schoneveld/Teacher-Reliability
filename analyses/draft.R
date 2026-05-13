@@ -39,6 +39,9 @@ data_duration <- data |>
     )
   )
 
+
+
+
 data_duration |> 
   summarise(
     overall_accuracy = mean(practice_duration_survey_correct)
@@ -66,10 +69,10 @@ data_duration |>
 
 data_duration |>
   mutate(
-    practice_duration_logs_months = round_to(
-      practice_duration_logs_months, 
-      )
-    ) |> 
+    # practice_duration_logs_months = round_any(
+    #   practice_duration_logs_months, 0.25
+      # )
+    ) |>
   ggplot(
     aes(
       x = practice_duration_logs_months,
@@ -77,23 +80,39 @@ data_duration |>
       color = practice_duration_survey_estimation
     )
   ) +
-  # geom_point() +
   geom_count() +
   scale_size_area(
-    max_size = 10,
-    breaks = c(breaks_size, 100),
+    max_size = 5,
+    breaks = breaks_size,
       name = legend_title
   ) +
-  # scale_size_continuous(
-  #   limits = c(1, 140),
-  #   range = range_size,
-  #   breaks = c(breaks_size, 100),
-  #   name = legend_title
-  # ) +
   scale_color_manual(
     values = c("Overestimate" = color_overestimate,
                "Underestimate" = color_underestimate,
                "Correct Estimate" = color_correctestimate
     ),
     name = 'Estimation'
-  ) 
+  )  +
+  ggtitle('Duration (months)') +
+  ylab('Teacher Report') +
+  xlab('Practice Log') +
+  coord_cartesian(
+    xlim = c(0, 5),
+    ylim = c(0, 5)
+  ) +
+  common_theme
+
+
+data_cor <- data |> 
+  mutate(
+    practice_duration_survey_ranked = case_when(
+      practice_duration_survey == 'No practice' ~ 1,
+      practice_duration_survey == '1-2 months' ~ 2,
+      practice_duration_survey == '3-4 months' ~ 3,
+      practice_duration_survey == 'Complete period' ~ 4,
+    )
+  )
+
+
+
+

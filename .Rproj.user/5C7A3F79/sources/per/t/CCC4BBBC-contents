@@ -10,6 +10,7 @@ library(tidyverse)
 library(here)
 library(lavaan)
 library(patchwork)
+library(plyr)
 
 ## Source functions
 source(
@@ -464,8 +465,6 @@ library(psych)
 library(performance)
 
 # Length ----
-
-
 ML_length_logs <- lmer(
   practice_length_logs ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
@@ -475,7 +474,7 @@ ML_length_survey <- lmer(
   practice_length_survey ~ 1 + (1 | school_ID) + (1 | school_ID:group_ID),
   data = data
   )
-summary(ML_length_survey)
+
 vars_length <- decompose_variance(
   model_logs = ML_length_logs,
   model_survey = ML_length_survey,
@@ -820,12 +819,12 @@ data_decomposed <- data |>
     practice_length_survey_L3 = mean(practice_length_survey, na.rm = T),
     practice_length_logs_L3 = mean(practice_length_logs, na.rm = T)
   ) |>
-  # --- L2 components (group means, school-mean centred) ---
+  # --- L2 components (group means school-mean centred) ---
   group_by(school_ID, group_ID) |>
   mutate(
     practice_length_survey_L2 = mean(practice_length_survey, na.rm = T) - practice_length_survey_L3,
     practice_length_logs_L2 = mean(practice_length_logs, na.rm = T) - practice_length_logs_L3,
-    # --- L1 components (within-group deviations) ---
+    # --- L1 components (within-group deviations, student scores group mean centered) ---
     practice_length_survey_L1 = practice_length_survey - mean(practice_length_survey, na.rm = T),
     practice_length_logs_L1 = practice_length_logs - mean(practice_length_logs, na.rm = T)
   ) |>
@@ -875,3 +874,40 @@ fit <- lmer(practice_length_logs ~ 1 + practice_length_survey + (1 | school_ID/g
 
 standardize_parameters(fit, method = "refit")
 summary(fit)
+
+
+# multilevel SEM model ---- 
+library(lavaan)
+
+model <- '
+  # Level 1 (within-group)
+  level: 1
+    practice_length_logs ~ practice_length_survey
+
+  # Level 2 (between-groups, within-school)
+  level: 2
+    practice_length_logs ~ practice_length_survey
+
+  # Level 3 (between-school)
+  level: 3
+    practice_length_logs ~ practice_length_survey
+'
+
+fit <- sem(
+  model,
+  data      = data,
+  cluster   = c("school_ID", "group_ID"),  # L3 and L2 clustering variables
+  estimator = "MLR"                         # robust maximum likelihood
+)
+
+summary(fit, fit.measures = TRUE, standardized = TRUE)
+
+data |>
+  group_by(school_ID, group_ID) |>
+  summarise(
+    var_survey = var(practice_length_survey, na.rm = TRUE),
+    n          = n()
+  ) |>
+  filter(var_survey == 0 | is.na(var_survey))
+
+

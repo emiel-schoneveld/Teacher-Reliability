@@ -177,114 +177,135 @@ decompose_variance <- function(
     measure = NA
 ) {
   # Calculate variance and stt.dev per level
-  var_logs <- summary(model_logs)$varcor |> 
-    as_tibble() |> 
-    rename(
-      Group = 'grp',
-      Variance = vcov,
-      `Standard Deviation` = sdcor
-    ) |> 
-    dplyr::select(
-      Group, Variance, `Standard Deviation`
-    ) |> 
-    mutate(
-      Model = "logs"
-    )
-  
-  var_survey <- summary(model_survey)$varcor |> 
-    as_tibble() |> 
-    rename(
-      Group = 'grp',
-      Variance = vcov,
-      `Standard Deviation` = sdcor
-    ) |> 
-    dplyr::select(
-      Group, Variance, `Standard Deviation`
-    ) |> 
-    mutate(
-      Model = "survey"
-    )
-  
-  # Calculate ICC per level
-  ICC_logs <- performance::icc(
-    model_logs,
-    by_group = T
-  ) |> 
-    as_tibble() |> 
-    mutate(
-      Model = "logs"
-    )
-  
-  ICC_survey <- performance::icc(
-    model_survey,
-    by_group = T
-  ) |> 
-    as_tibble() |> 
-    mutate(
-      Model = "survey"
-    )
-  
-  # Add residual ICC
-  ICC_logs <- ICC_logs |> 
-    add_row(
-      Group = "Residual",
-      ICC = 1 - sum(ICC_logs$ICC, na.rm = T),
-      Model = "logs"
-    ) 
-  
-  ICC_survey <- ICC_survey |> 
-    add_row(
-      Group = "Residual",
-      ICC = 1 - sum(ICC_survey$ICC, na.rm = T),
-      Model = "survey"
-    )
-  
-  # Calculate Cumulative percentage of variance explained
-  ICC_logs <- ICC_logs |> 
-    mutate(
-      Group = factor(
-        Group, 
-        levels = c('school_ID', 'school_ID:group_ID', 'Residual')
+  if (!is.na(model_logs)) {
+    # Extract model info
+    var_logs <- summary(model_logs)$varcor |> 
+      as_tibble() |> 
+      rename(
+        Group = 'grp',
+        Variance = vcov,
+        `Standard Deviation` = sdcor
+      ) |> 
+      dplyr::select(
+        Group, Variance, `Standard Deviation`
+      ) |> 
+      mutate(
+        Model = "logs"
       )
+    
+    # Calculate ICC
+    ICC_logs <- performance::icc(
+      model_logs,
+      by_group = T
     ) |> 
-    arrange(
-      Group
-    ) |> 
-    mutate(
-      `Percentage Var Explained` = cumsum(ICC)
-    )
-  
-  ICC_survey <- ICC_survey |> 
-    mutate(
-      Group = factor(
-        Group, 
-        levels = c('school_ID', 'school_ID:group_ID', 'Residual')
+      as_tibble() |> 
+      mutate(
+        Model = "logs"
       )
-    ) |> 
-    arrange(
-      Group
-    ) |> 
-    mutate(
-      `Percentage Var Explained` = cumsum(ICC)
-    )
+    
+    # Add residual ICC
+    ICC_logs <- ICC_logs |> 
+      add_row(
+        Group = "Residual",
+        ICC = 1 - sum(ICC_logs$ICC, na.rm = T),
+        Model = "logs"
+      )
+    
+    # Calculate Cumulative percentage of variance explained
+    ICC_logs <- ICC_logs |> 
+      mutate(
+        Group = factor(
+          Group, 
+          levels = c('school_ID', 'school_ID:group_ID', 'Residual')
+        )
+      ) |> 
+      arrange(
+        Group
+      ) |> 
+      mutate(
+        `Percentage Var Explained` = cumsum(ICC)
+      )
+    
+    # Bind tibbles
+    results_logs <- var_logs |> 
+      full_join(
+        ICC_logs,
+        by = c("Group", "Model")
+      )
+  }
   
-  # Bind tibbles
-  results_logs <- var_logs |> 
-    full_join(
-      ICC_logs,
-      by = c("Group", "Model")
-    )
-  
-  results_survey <- var_survey |> 
-    full_join(
-      ICC_survey,
-      by = c("Group", "Model")
-    )
-  
-  results_combined <- results_logs |> 
-    bind_rows(
-      results_survey
+  if (!is.na(model_survey)) {
+    # Extract model info
+    var_survey <- summary(model_survey)$varcor |> 
+      as_tibble() |> 
+      rename(
+        Group = 'grp',
+        Variance = vcov,
+        `Standard Deviation` = sdcor
+      ) |> 
+      dplyr::select(
+        Group, Variance, `Standard Deviation`
+      ) |> 
+      mutate(
+        Model = "survey"
+      )
+    
+    # Calculate ICC per level
+    ICC_survey <- performance::icc(
+      model_survey,
+      by_group = T
     ) |> 
+      as_tibble() |> 
+      mutate(
+        Model = "survey"
+      )
+    
+    # Add residual ICC
+    ICC_survey <- ICC_survey |> 
+      add_row(
+        Group = "Residual",
+        ICC = 1 - sum(ICC_survey$ICC, na.rm = T),
+        Model = "survey"
+      )
+    
+    # Calculate Cumulative percentage of variance explained
+    ICC_survey <- ICC_survey |> 
+      mutate(
+        Group = factor(
+          Group, 
+          levels = c('school_ID', 'school_ID:group_ID', 'Residual')
+        )
+      ) |> 
+      arrange(
+        Group
+      ) |> 
+      mutate(
+        `Percentage Var Explained` = cumsum(ICC)
+      )
+    
+    # Bind tibbles
+    results_survey <- var_survey |> 
+      full_join(
+        ICC_survey,
+        by = c("Group", "Model")
+      )
+  }
+  
+  # Combine results
+  if (!is.na(model_logs) & !is.na(model_survey)) {
+    # Combine results
+    results_combined <- results_logs |> 
+      bind_rows(
+        results_survey
+      ) 
+  } else if (!is.na(model_logs)) {
+    results_combined <- results_logs
+  } else if (!is.na(model_survey)) {
+    results_combined <- results_survey
+  }
+  
+  # Transform data
+  results_combined <- results_combined |> 
     mutate(
       Group = factor(
         Group, 

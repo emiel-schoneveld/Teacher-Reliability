@@ -10,6 +10,7 @@ library(tidyverse)
 library(here)
 library(lavaan)
 library(patchwork)
+library(plyr)
 
 ## Source functions
 source(
@@ -818,12 +819,12 @@ data_decomposed <- data |>
     practice_length_survey_L3 = mean(practice_length_survey, na.rm = T),
     practice_length_logs_L3 = mean(practice_length_logs, na.rm = T)
   ) |>
-  # --- L2 components (group means, school-mean centred) ---
+  # --- L2 components (group means school-mean centred) ---
   group_by(school_ID, group_ID) |>
   mutate(
     practice_length_survey_L2 = mean(practice_length_survey, na.rm = T) - practice_length_survey_L3,
     practice_length_logs_L2 = mean(practice_length_logs, na.rm = T) - practice_length_logs_L3,
-    # --- L1 components (within-group deviations) ---
+    # --- L1 components (within-group deviations, student scores group mean centered) ---
     practice_length_survey_L1 = practice_length_survey - mean(practice_length_survey, na.rm = T),
     practice_length_logs_L1 = practice_length_logs - mean(practice_length_logs, na.rm = T)
   ) |>

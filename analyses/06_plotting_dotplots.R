@@ -25,12 +25,13 @@ common_theme <- theme_light() +
     axis.title.y = element_text(margin = margin(r = 10)),
     legend.text = element_text(size = 8),
     legend.title = element_text(size = 8),
-    )
+  )
 
 ## Define common visual parameters ----
 limits_size <- range(1, 45)
 range_size <- range(1, 4.5)
-breaks_size <- c(1, 5, 20, 45)
+max_size <- 1
+breaks_size <- c(1, 5, 20, 45, 100)
 legend_title <- 'N Students'
 line_alpha = 0.4
 annotate_point_color = 'orange'
@@ -62,7 +63,7 @@ p1_length <- data |>
     intercept = 0, 
     slope = 1, 
     alpha = line_alpha
-    ) +
+  ) +
   geom_count() +
   scale_size_continuous(
     limits = limits_size,
@@ -82,7 +83,7 @@ p1_length <- data |>
   coord_cartesian(
     xlim = c(0, 20),
     ylim = c(0, 20)
-    ) +
+  ) +
   common_theme
 # p1_length
 
@@ -109,7 +110,7 @@ p2_freq <- data |>
     intercept = 0, 
     slope = 1,
     alpha = line_alpha
-    ) +
+  ) +
   # Point for labeling
   # geom_point(
   #   x = 2,
@@ -136,7 +137,7 @@ p2_freq <- data |>
   coord_cartesian(
     xlim = c(0, 5),
     ylim = c(0, 5)
-    ) +
+  ) +
   common_theme
 # p2_freq
 
@@ -160,7 +161,7 @@ p3_weeks <- data |>
     intercept = 0, 
     slope = 1, 
     alpha = line_alpha
-    ) +
+  ) +
   # Point for labeling
   # geom_point(
   #   x = 7,
@@ -214,7 +215,7 @@ p4_ciitime <- data |>
     intercept = 0, 
     slope = 1, 
     alpha = line_alpha
-    ) +
+  ) +
   # Point for labeling
   # geom_point(
   #   x = 7,
@@ -234,7 +235,7 @@ p4_ciitime <- data |>
                "Underestimate" = color_underestimate,
                "Correct Estimate" = color_correctestimate
     )
-    ) +
+  ) +
   ggtitle('Total Practice Time (hours)') +
   ylab('Teacher Report') +
   xlab('Practice Log') +
@@ -264,10 +265,10 @@ scatterplot_teacher_vs_logs <- p1_length +
 
 scatterplot_teacher_vs_logs
 ggsave(
-    filename = here::here('output/manuscript_tables_figures/dotplot.png'),
-    dpi = 600,
-    width = 7.1,
-    height = 6
+  filename = here::here('output/manuscript_tables_figures/dotplot.png'),
+  dpi = 600,
+  width = 7.1,
+  height = 6
 )
 
 
