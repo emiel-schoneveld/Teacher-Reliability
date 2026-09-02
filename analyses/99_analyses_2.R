@@ -515,3 +515,7 @@ blandtaltman_freq <- blandtaltman_freq_L0 +
 wrap_elements(blandtaltman_length) + wrap_elements(blandtaltman_freq) +
   plot_layout(nrow = 2)
 
+
+
+
+# convergent validity

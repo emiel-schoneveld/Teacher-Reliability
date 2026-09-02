@@ -10,7 +10,7 @@ library(tidyverse)
 library(here)
 
 ## Load functions
-source(here('analyses/functions and themes.R'))
+source(here('analyses/functions.R'))
 
 # Load data ----
 ## Wide data

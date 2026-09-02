@@ -1,3 +1,29 @@
+# Functions and themes
+# Themes ----
+## Common theme for plots
+common_theme <- theme_light() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    title = element_text(size = 7),
+    axis.text = element_text(size = 7),
+    axis.title = element_text(size = 10),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    legend.text = element_text(size = 8),
+    legend.title = element_text(size = 8),
+  )
+
+## Colors for plots ----
+color_positive_high <- palette_okabe_ito(3)
+color_positive_medium <- palette_okabe_ito(5)
+color_negative_medium <- palette_okabe_ito(1)
+color_negative_high <- palette_okabe_ito(7)
+
+## Plot size ----
+plot_height <- 4
+plot_width <- 7.1
+
+# Functions ----
 # Function to add trailing zeros for tables ----
 format_number_for_table <- function(number_input = '', 
                                     n_decimals = 2,
