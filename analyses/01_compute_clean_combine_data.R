@@ -65,9 +65,7 @@ data_questionnaire <- data_questionnaire_raw |>
   ) |> 
   rename(
     date_survey = EndDate,
-    # practice_freq_planned = practice_freq_1,
     practice_freq_survey = practice_freq_2,
-    # practice_length_planned = practice_dur_plan_1,
     practice_length_survey = practice_dur_plan_2,
     practice_duration_survey = practice_period,
     practice_type_survey = practice_type,
@@ -105,82 +103,6 @@ data_questionnaire <- data_questionnaire |>
       practice_length_survey
     )
   )
-
-## Compute weeks and ciitime columns ----
-### Recode duration column to calculate prop
-data_questionnaire <- data_questionnaire |> 
-  mutate(
-    # Recode duration column to reflect number of months
-    practice_duration_survey_recoded =  recode(
-      practice_duration_survey,
-      'No practice' = '0',
-      'Less than 1 month' = '0.25',
-      '1-2 months' = '1.5',
-      '3-4 months' = '3.5',
-      'Complete period' = '4.75'
-    ) |> 
-      as.numeric(),
-    practice_duration_survey_prop = practice_duration_survey_recoded / 5
-  )
-
-### Calculate weeks and ccitime
-data_questionnaire <- data_questionnaire |> 
-  mutate(
-    practice_weeks_survey = practice_duration_survey_prop * weeks_of_practice,
-    practice_ciitime_survey = practice_weeks_survey * practice_freq_survey * practice_length_survey * (1/60)
-  )
-
-### Omit columns used for calculations
-data_questionnaire <- data_questionnaire |> 
-  dplyr::select(
-    !contains('survey_')
-  )
-
-# Transform data_wordreading ----
-## Rename columns and convert to numeric ----
-# data_wordreading_all <- data_wordreading_all |> 
-#   rename(
-#     student_ID = Leerlingnummer,
-#     wordreading_version_pre = Woordleestoets_versie_pre,
-#     wordreading_version_post = Woordleestoets_versie_post,
-#     wordreading_score_pre = Woordleestoets_vaardigheidsscore_pre,
-#     wordreading_score_post = Woordleestoets_vaardigheidsscore_post
-#   ) |> 
-#   mutate(
-#     wordreading_score_pre = wordreading_score_pre |> as.numeric(),
-#     wordreading_score_post = wordreading_score_post |> as.numeric()
-#   )
-
-## Select columns ----
-# data_wordreading_all <- data_wordreading_all |> 
-#   dplyr::select(
-#     student_ID,
-#     contains('wordreading') & (contains('pre') | contains('post'))
-#   )
-
-## Remove all values that are not a DMT ----
-### For premeasurement
-# data_wordreading_pre <- data_wordreading_all |> 
-#   dplyr::select(
-#     student_ID,
-#     contains('pre')
-#   ) |> 
-#   filter(
-#     wordreading_version_pre == 'DMT'
-#   )
-
-## Join for filtered post measurement with pre measurement ----
-# data_wordreading <- data_wordreading_all |> 
-#   dplyr::select(
-#     student_ID,
-#     contains('post')
-#   ) |> 
-#   filter(
-#     wordreading_version_post == 'DMT'
-#   ) |> 
-#   full_join(
-#     data_wordreading_pre
-#   )
 
 # Transform data_characteristics ----
 ## Rename and transform columns
@@ -293,8 +215,6 @@ data_logs_session_unfiltered <- data_logs |>
   summarise(
     session_starttime = min(lesson_time_start, na.rm = T),
     session_endtime = max(lesson_time_end, na.rm = T),
-    # session_dose = sum(lesson_dose, na.rm = T),
-    # session_length_readingtime = sum(lesson_length, na.rm = T)
   ) |> 
   ungroup()|> 
   mutate(
@@ -322,19 +242,6 @@ data_logs_student <- data_logs_session |>
   summarise(
     practice_length_logs = mean(session_length),
     practice_length_logs = as.numeric(practice_length_logs),
-    
-    # practice_dose_logs = mean(session_dose, na.rm = T),
-    # practice_dose_logs = as.numeric(practice_dose_logs),
-    
-    practice_ciitime_logs = sum(session_length, na.rm = T)/60,
-    practice_ciitime_logs = as.numeric(practice_ciitime_logs),
-    
-    # practice_ciireadingtime_logs = sum(session_length_readingtime, na.rm = T)/60,
-    # practice_ciireadingtime_logs = as.numeric(practice_ciireadingtime_logs),
-    # 
-    # practice_ciiwords_logs = sum(session_dose, na.rm = T),
-    # practice_ciiwords_logs = as.numeric(practice_ciiwords_logs)
-    
   )
 
 ### Compute and add duration ----
@@ -409,14 +316,11 @@ data_logs_student <- data_logs_session |>
     y = data_logs_student
   )
 
-# Combine data_logs_student, data_questionnaire, data_DMT and data_characteristics ----
+# Combine data_logs_student, data_questionnaire and data_characteristics ----
 data <- data_logs_student |> 
   inner_join(
     data_questionnaire
   ) |> 
-  # left_join(
-  #   data_wordreading
-  # ) |> 
   left_join(
     data_characteristics
   )
