@@ -255,63 +255,53 @@ reliability <- bind_rows(
   reliability_L3,
 ) |> 
   mutate(
-    level = as_factor(level) |> fct_relevel('overall', 'school', 'group', 'student')
+    perc_true = reliability,
+    perc_error = 1 - reliability,
+    Level = as_factor(level) |> fct_relevel('overall', 'school', 'group', 'student')
+  ) |> 
+  pivot_longer(
+    contains('perc'),
+    names_to = 'Variance source',
+    values_to = 'Percentage'
+  ) |> 
+  mutate(
+    `Variance source` = case_when(
+      `Variance source` == 'perc_true' ~ 'Variance attributed to true score',
+      `Variance source` == 'perc_error' ~ 'Variance attributed to measurement error',
+    ) |> as_factor() |> fct_relevel(
+      'Variance attributed to measurement error',
+      'Variance attributed to true score', 
+      )
   ) |> 
   arrange(
     dimension,
-    level,
-  )
+    Level,
+    `Variance source`
+  ) 
+
 reliability
 
 ## Plot ----
-### Initialize correlation regens
-cor_regions <- tibble(
-  xmin = rep(-Inf, 4),
-  xmax = rep(Inf, 4),
-  ymin = c(0.90, 0.75, 0.5, 0),
-  ymax = c(Inf, 0.90, 0.75, 0.5),
-  fill = c(color_positive_high, 
-           color_positive_medium, 
-           color_negative_medium,
-           color_negative_high
-  ),
-  labels = c('Excelent', 'Good', 'Moderate', 'Poor'),
-  alpha = rep(0.3, 4)
-)
-
 reliability |> 
   ggplot(
     aes(
-      x = level,
-      y = reliability
+      x = Level,
+      y = Percentage,
+      fill = `Variance source`
     )
   ) +
-  geom_rect(
-    data = cor_regions,
-    aes(
-      xmin = xmin,
-      xmax = xmax,
-      ymin = ymin,
-      ymax = ymax,
-      fill = fill,
-      alpha = alpha,
-      ),
-    inherit.aes = FALSE
-    ) +
-  geom_point() +
+  geom_bar(
+    position = 'stack', stat = 'identity'
+  ) +
   facet_grid(
     ~dimension
   ) +
-  scale_fill_identity(
-    guide  = guide_legend(
-      title         = "Reliability",
-      override.aes  = list(alpha = 0.3)
-    ),
-    name   = "Reliability",
-    breaks = cor_regions$fill,
-    labels = cor_regions$labels,
+  scale_fill_manual(
+    values = c(
+      'Variance attributed to true score' = 'green',
+      'Variance attributed to measurement error' = 'red'
+    )
   ) +
-  scale_alpha_identity() +
   scale_y_continuous(
     limits = c(0, 1), 
     expand = expansion(0),
@@ -320,3 +310,5 @@ reliability |>
   ylab('Reliability') +
   xlab('Level') +
   common_theme
+
+
