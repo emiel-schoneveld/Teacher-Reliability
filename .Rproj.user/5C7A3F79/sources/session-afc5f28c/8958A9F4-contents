@@ -1,0 +1,96 @@
+# Exploratory analyses
+## by Emiel Schoneveld
+
+# General syntax ----
+## Clear environment
+rm(list = ls())
+
+## Load packages
+library(tidyverse)
+library(here)
+
+## Load functions
+source(here::here('analyses/functions and themes.R'))
+
+# Load data ----
+## Wide data
+load(
+  here('input/cleaned_data/data_wide.rds')
+  )
+
+# Decompose data ----
+data <- data |>
+  # --- L0 overall score ---
+  mutate(
+    practice_duration_logs_L0 = practice_duration_logs_months,
+    practice_freq_logs_L0 = practice_freq_logs,
+    practice_freq_survey_L0 = practice_freq_survey,
+    practice_freq_error_L0 = practice_freq_survey_L0 - practice_freq_logs_L0,
+    practice_length_logs_L0 = practice_length_logs,
+    practice_length_survey_L0 = practice_length_survey,
+    practice_length_error_L0 = practice_length_survey_L0 - practice_length_logs_L0,
+  ) |> 
+  # --- L3 components (school means) ---
+  group_by(school_ID) |>
+  mutate(
+    # duration
+    practice_duration_logs_L3 = mean(practice_duration_logs_months, na.rm = T),
+    
+    # Frequency
+    practice_freq_survey_L3 = mean(practice_freq_survey, na.rm = T),
+    practice_freq_logs_L3 = mean(practice_freq_logs, na.rm = T),
+    practice_freq_error_L3 = practice_freq_survey_L3 - practice_freq_logs_L3,
+    
+    # Length
+    practice_length_survey_L3 = mean(practice_length_survey, na.rm = T),
+    practice_length_logs_L3 = mean(practice_length_logs, na.rm = T),
+    practice_length_error_L3 = practice_length_survey_L3 - practice_length_logs_L3,
+    
+  ) |>
+  # --- L2 components (group means school-mean centred) ---
+  group_by(school_ID, group_ID) |>
+  mutate(
+    # Duration
+    practice_duration_logs_L2 = mean(practice_duration_logs_months, na.rm = T) - practice_duration_logs_L3,
+    
+    # Frequency
+    practice_freq_survey_L2 = mean(practice_freq_survey, na.rm = T) - practice_freq_survey_L3,
+    practice_freq_logs_L2 = mean(practice_freq_logs, na.rm = T) - practice_freq_logs_L3,
+    practice_freq_error_L2 = practice_freq_survey_L2 - practice_freq_logs_L2,
+    
+    # Length
+    practice_length_survey_L2 = mean(practice_length_survey, na.rm = T) - practice_length_survey_L3,
+    practice_length_logs_L2 = mean(practice_length_logs, na.rm = T) - practice_length_logs_L3,
+    practice_length_error_L2 = practice_length_survey_L2 - practice_length_logs_L2,
+    
+    # --- L1 components (within-group deviations, student scores group mean centered) ---
+    # Duration
+    practice_duration_logs_L1 = practice_duration_logs_months - mean(practice_duration_logs_months, na.rm = T),
+    
+    # Frequency
+    practice_freq_survey_L1 = practice_freq_survey - mean(practice_freq_survey, na.rm = T),
+    practice_freq_logs_L1 = practice_freq_logs - mean(practice_freq_logs, na.rm = T),
+    practice_freq_error_L1 = practice_freq_survey_L1 - practice_freq_logs_L1,
+    
+    # Length
+    practice_length_survey_L1 = practice_length_survey - mean(practice_length_survey, na.rm = T),
+    practice_length_logs_L1 = practice_length_logs - mean(practice_length_logs, na.rm = T),
+    practice_length_error_L1 = practice_length_survey_L1 - practice_length_logs_L1,
+  ) |>
+  ungroup()
+
+# Rank duration
+data <- data |> 
+  mutate(
+    practice_duration_survey = practice_duration_survey |> 
+      fct_relevel(
+        'No practice', 'Less than 1 month', '1-2 months', '3-4 months', 'Complete period'
+      ),
+    practice_duration_survey_ranked = case_when(
+      practice_duration_survey == 'No practice' ~ 1,
+      practice_duration_survey == 'Less than 1 month' ~ 2,
+      practice_duration_survey == '1-2 months' ~ 3,
+      practice_duration_survey == '3-4 months' ~ 4,
+      practice_duration_survey == 'Complete period' ~ 5,
+    )
+  )
