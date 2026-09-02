@@ -3,7 +3,7 @@
     "path": "C:/Users/RSCHONE/OneDrive - UvA/Promotie/Paper - teacher reliability/R project/analyses/06_equivalence_analysis.R",
     "project_path": "analyses/06_equivalence_analysis.R",
     "type": "r_source",
-    "hash": "1203688973",
+    "hash": "176631266",
     "contents": "",
     "dirty": false,
     "created": 1788342995797.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "10,14",
-        "scrollLine": "0"
+        "cursorPosition": "306,0",
+        "scrollLine": "292"
     },
     "folds": "",
-    "lastKnownWriteTime": 1788343473,
+    "lastKnownWriteTime": 1788349698,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1788343473388,
+    "last_content_update": 1788349698825,
     "read_only": false,
     "read_only_alternatives": []
 }

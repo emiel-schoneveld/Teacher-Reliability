@@ -7,6 +7,99 @@ source(here::here('analyses/03_descriptive_analyses.R'))
 
 ## Load packages
 
+# Average test ----
+## Duration
+### L0
+summary(data$practice_duration_survey)
+typical(data$practice_duration_survey)
+typical(data$practice_duration_logs_months)
+
+
+duration_median_L3 <- data |> 
+  group_by(
+    school_ID
+  ) |> 
+  reframe(
+    median_survey = typical(practice_duration_survey),
+    median_logs = typical(practice_duration_logs_L3)
+  ) |> 
+  mutate(
+    Level = 'school'
+  )
+
+duration_median_L2 <- data |> 
+  group_by(
+    group_ID
+  ) |> 
+  reframe(
+    median_survey = typical(practice_duration_survey),
+    median_logs = typical(practice_duration_logs_L2)
+  )  |> 
+  mutate(
+    Level = 'group'
+  )
+
+duration_median_L1 <- data |> 
+  group_by(
+    student_ID
+  ) |> 
+  reframe(
+    median_survey = typical(practice_duration_survey),
+    median_logs = typical(practice_duration_logs_L1)
+  )  |> 
+  mutate(
+    Level = 'student'
+  )
+
+duration_median_L0 <- data |> 
+  group_by(
+    student_ID
+  ) |> 
+  reframe(
+    median_survey = typical(practice_duration_survey),
+    median_logs = typical(practice_duration_logs_L0)
+  )  |> 
+  mutate(
+    Level = 'overall'
+  )
+
+duration_median <- bind_rows(
+  duration_median_L0,
+  duration_median_L1,
+  duration_median_L2,
+  duration_median_L3
+) |> 
+  mutate(
+    median_survey = as_factor(median_survey) |> fct_relevel('No practice', 'Less than 1 month', '1-2 months', '3-4 months', 'Complete period'),
+    Level = as_factor(Level) |> fct_relevel('overall', 'student', 'group', 'school')
+  )
+
+duration_median |> 
+  ggplot(
+    aes(
+      x = median_logs,
+      y = median_survey
+    )
+  ) +
+  geom_point() +
+  facet_grid(~Level)
+
+
+## Frequency ----
+t.test(
+  data$practice_freq_logs,
+  data$practice_freq_survey
+)
+
+## Length ----
+t.test(
+  data$practice_length_logs,
+  data$practice_length_survey
+)
+
+
+
+
 # Blandt Altman plots ----
 ## Length ----
 ### L0
@@ -14,10 +107,10 @@ blandtaltman_length_L0 <- data |>
   ggplot(
     aes(
       x = practice_length_logs_L0,
-      y = practice_length_error_L0
+      y = practice_length_error_L0,
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_length_error_L0),
     color = 'blue'
@@ -37,10 +130,10 @@ blandtaltman_length_L1 <- data |>
   ggplot(
     aes(
       x = practice_length_logs_L1,
-      y = practice_length_error_L1
+      y = practice_length_error_L1,
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_length_error_L1),
     color = 'blue'
@@ -60,10 +153,10 @@ blandtaltman_length_L2 <- data |>
   ggplot(
     aes(
       x = practice_length_logs_L2,
-      y = practice_length_error_L2
+      y = practice_length_error_L2,
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_length_error_L2),
     color = 'blue'
@@ -83,10 +176,10 @@ blandtaltman_length_L3 <- data |>
   ggplot(
     aes(
       x = practice_length_logs_L3,
-      y = practice_length_error_L3
+      y = practice_length_error_L3,
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_length_error_L3),
     color = 'blue'
@@ -106,7 +199,8 @@ blandtaltman_length <- blandtaltman_length_L0 +
   blandtaltman_length_L1 +
   blandtaltman_length_L2 +
   blandtaltman_length_L3 +
-  plot_layout(ncol = 4)
+  plot_layout(ncol = 4, guides = 'collect') 
+blandtaltman_length
 
 ## Frequency ----
 ### L0
@@ -117,7 +211,7 @@ blandtaltman_freq_L0 <- data |>
       y = practice_freq_error_L0
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_freq_error_L0),
     color = 'blue'
@@ -140,7 +234,7 @@ blandtaltman_freq_L1 <- data |>
       y = practice_freq_error_L1
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_freq_error_L1),
     color = 'blue'
@@ -163,7 +257,7 @@ blandtaltman_freq_L2 <- data |>
       y = practice_freq_error_L2
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_freq_error_L2),
     color = 'blue'
@@ -186,7 +280,7 @@ blandtaltman_freq_L3 <- data |>
       y = practice_freq_error_L3
     )
   ) +
-  geom_point() +
+  geom_point(shape = 1) +
   geom_hline(
     yintercept = mean(data$practice_freq_error_L3),
     color = 'blue'
@@ -207,7 +301,15 @@ blandtaltman_freq <- blandtaltman_freq_L0 +
   blandtaltman_freq_L2 +
   blandtaltman_freq_L3 +
   plot_layout(ncol = 4)
+blandtaltman_freq
 
+### Duration
+
+
+
+
+
+# Combine all blandaltman plots
 wrap_elements(blandtaltman_length) + wrap_elements(blandtaltman_freq) +
   plot_layout(nrow = 2)
 
@@ -215,219 +317,6 @@ wrap_elements(blandtaltman_length) + wrap_elements(blandtaltman_freq) +
 
 
 # convergent validity
-
-
-
-
-# Equivalence (Blandt altman plots) ----
-## Length ----
-### L0
-blandtaltman_length_L0 <- data |> 
-  ggplot(
-    aes(
-      x = practice_length_logs_L0,
-      y = practice_length_error_L0
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L0),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L0) + (1.96*sd(data$practice_length_error_L0)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L0) - (1.96*sd(data$practice_length_error_L0)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-20, 20), ylim = c(-15, 15))
-
-## L1
-blandtaltman_length_L1 <- data |> 
-  ggplot(
-    aes(
-      x = practice_length_logs_L1,
-      y = practice_length_error_L1
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L1),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L1) + (1.96*sd(data$practice_length_error_L1)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L1) - (1.96*sd(data$practice_length_error_L1)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-20, 20), ylim = c(-15, 15))
-
-## L2
-blandtaltman_length_L2 <- data |> 
-  ggplot(
-    aes(
-      x = practice_length_logs_L2,
-      y = practice_length_error_L2
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L2),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L2) + (1.96*sd(data$practice_length_error_L2)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L2) - (1.96*sd(data$practice_length_error_L2)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-20, 20), ylim = c(-15, 15))
-
-## L3
-blandtaltman_length_L3 <- data |> 
-  ggplot(
-    aes(
-      x = practice_length_logs_L3,
-      y = practice_length_error_L3
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L3),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L3) + (1.96*sd(data$practice_length_error_L3)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_length_error_L3) - (1.96*sd(data$practice_length_error_L3)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-20, 20), ylim = c(-15, 15))
-
-### Combine plots
-blandtaltman_length <- blandtaltman_length_L0 +
-  blandtaltman_length_L1 +
-  blandtaltman_length_L2 +
-  blandtaltman_length_L3 +
-  plot_layout(ncol = 4)
-
-## Frequency ----
-### L0
-blandtaltman_freq_L0 <- data |> 
-  ggplot(
-    aes(
-      x = practice_freq_logs_L0,
-      y = practice_freq_error_L0
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L0),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L0) + (1.96*sd(data$practice_freq_error_L0)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L0) - (1.96*sd(data$practice_freq_error_L0)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3))
-
-## L1
-blandtaltman_freq_L1 <- data |> 
-  ggplot(
-    aes(
-      x = practice_freq_logs_L1,
-      y = practice_freq_error_L1
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L1),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L1) + (1.96*sd(data$practice_freq_error_L1)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L1) - (1.96*sd(data$practice_freq_error_L1)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3))
-
-## L2
-blandtaltman_freq_L2 <- data |> 
-  ggplot(
-    aes(
-      x = practice_freq_logs_L2,
-      y = practice_freq_error_L2
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L2),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L2) + (1.96*sd(data$practice_freq_error_L2)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L2) - (1.96*sd(data$practice_freq_error_L2)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3))
-
-## L3
-blandtaltman_freq_L3 <- data |> 
-  ggplot(
-    aes(
-      x = practice_freq_logs_L3,
-      y = practice_freq_error_L3
-    )
-  ) +
-  geom_point() +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L3),
-    color = 'blue'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L3) + (1.96*sd(data$practice_freq_error_L3)),
-    color = 'red'
-  ) +
-  geom_hline(
-    yintercept = mean(data$practice_freq_error_L3) - (1.96*sd(data$practice_freq_error_L3)),
-    color = 'red'
-  ) +
-  coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3))
-
-### Combine plots
-blandtaltman_freq <- blandtaltman_freq_L0 +
-  blandtaltman_freq_L1 +
-  blandtaltman_freq_L2 +
-  blandtaltman_freq_L3 +
-  plot_layout(ncol = 4)
-
-wrap_elements(blandtaltman_length) + wrap_elements(blandtaltman_freq) +
-  plot_layout(nrow = 2)
-
-
-
-
-# convergent validity
-
 
 
 
