@@ -323,3 +323,10 @@ decompose_variance <- function(
   # Return results
   return(results_combined)
 }
+
+## rounding to significance
+round_to <- function(number = NA,
+                     base = 0.5) {
+  number_rounded <- round(number / base)*base
+  return(number_rounded)
+}

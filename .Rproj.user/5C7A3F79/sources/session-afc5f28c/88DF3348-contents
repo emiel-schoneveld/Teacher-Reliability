@@ -1,0 +1,98 @@
+# draft analyses 2.0
+## by Emiel Schoneveld
+
+# General syntax ----
+## Clear environment
+rm(list = ls())
+
+## Load packages
+library(tidyverse)
+library(here)
+library(DescTools)
+library(patchwork)
+library(ggokabeito)
+library(lme4)
+library(modelr)
+
+## Source functions
+source(
+  here::here(
+    'analyses/functions.R'
+  )
+)
+
+# Load data ----
+## Wide data
+load(
+  here::here('input/cleaned_data/data_wide.rds')
+)
+load(
+  here::here('input/cleaned_data/data_long.rds')
+)
+
+# Decompose data ----
+data <- data |>
+  # --- L0 overall score ---
+  mutate(
+    practice_duration_logs_L0 = practice_duration_logs_months,
+    practice_freq_logs_L0 = practice_freq_logs,
+    practice_freq_survey_L0 = practice_freq_survey,
+    practice_length_logs_L0 = practice_length_logs,
+    practice_length_survey_L0 = practice_length_survey
+  ) |> 
+  # --- L3 components (school means) ---
+  group_by(school_ID) |>
+  mutate(
+    # duration
+    practice_duration_logs_L3 = mean(practice_duration_logs_months, na.rm = T),
+    
+    # Frequency
+    practice_freq_survey_L3 = mean(practice_freq_survey, na.rm = T),
+    practice_freq_logs_L3 = mean(practice_freq_logs, na.rm = T),
+    
+    # Length
+    practice_length_survey_L3 = mean(practice_length_survey, na.rm = T),
+    practice_length_logs_L3 = mean(practice_length_logs, na.rm = T),
+    
+  ) |>
+  # --- L2 components (group means school-mean centred) ---
+  group_by(school_ID, group_ID) |>
+  mutate(
+    # Duration
+    practice_duration_logs_L2 = mean(practice_duration_logs_months, na.rm = T) - practice_duration_logs_L3,
+    
+    # Frequency
+    practice_freq_survey_L2 = mean(practice_freq_survey, na.rm = T) - practice_freq_survey_L3,
+    practice_freq_logs_L2 = mean(practice_freq_logs, na.rm = T) - practice_freq_logs_L3,
+    
+    # Length
+    practice_length_survey_L2 = mean(practice_length_survey, na.rm = T) - practice_length_survey_L3,
+    practice_length_logs_L2 = mean(practice_length_logs, na.rm = T) - practice_length_logs_L3,
+    
+    # --- L1 components (within-group deviations, student scores group mean centered) ---
+    # Duration
+    practice_duration_logs_L1 = practice_duration_logs_months - mean(practice_duration_logs_months, na.rm = T),
+    
+    # Frequency
+    practice_freq_survey_L1 = practice_freq_survey - mean(practice_freq_survey, na.rm = T),
+    practice_freq_logs_L1 = practice_freq_logs - mean(practice_freq_logs, na.rm = T),
+    
+    # Length
+    practice_length_survey_L1 = practice_length_survey - mean(practice_length_survey, na.rm = T),
+    practice_length_logs_L1 = practice_length_logs - mean(practice_length_logs, na.rm = T),
+  ) |>
+  ungroup()
+
+# Reliability ----
+data$practice_length_logs
+data$practice_length_survey
+
+var(data$practice_length_logs) / var(data$practice_length_survey)
+var(data$practice_freq_logs) / var(data$practice_freq_survey)
+
+data |> 
+  group_by(
+    group_ID
+  )
+
+

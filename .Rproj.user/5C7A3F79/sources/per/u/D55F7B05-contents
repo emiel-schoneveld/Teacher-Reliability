@@ -1,0 +1,10 @@
+typical(
+  data |> pull(practice_freq_survey) |> as_factor()
+)
+typical(
+  data |> pull(practice_duration_survey) |> as_factor()
+)
+typical(
+  data |> pull(practice_length_survey)
+)
+

@@ -307,6 +307,7 @@ data_logs_session <- data_logs_session_unfiltered |>
     session_length >= min_session_length,
     session_length <= max_session_length,
   )
+nrow(data_logs_session_unfiltered) - nrow(data_logs_session) # number of omitted lessons
 
 ### Calculate percentage of sessions that were removed and check if no students are omitted because of it
 100 - ((nrow(data_logs_session) / nrow(data_logs_session_unfiltered)) * 100)
