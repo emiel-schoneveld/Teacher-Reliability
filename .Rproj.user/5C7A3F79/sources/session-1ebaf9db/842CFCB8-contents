@@ -1,0 +1,11 @@
+data |> 
+  distinct(
+    school_ID, .keep_all = T
+  ) |> 
+  dplyr::select(
+    contains('_L')
+  ) |> 
+  summarise(
+    M = mean(practice_freq_error_L2),
+    SE = 1.96*sd(practice_freq_error_L2),
+  )

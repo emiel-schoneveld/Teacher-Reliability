@@ -99,9 +99,17 @@ t.test(
 )
 
 
-
-
 # Blandt Altman plots ----
+## Filter data per level
+data_group <- data |> 
+  distinct(
+    group_ID, .keep_all = T
+  )
+data_school <- data |> 
+  distinct(
+    school_ID, .keep_all = T
+  )
+
 ## Length ----
 ### L0
 blandtaltman_length_L0 <- data |> 
@@ -150,10 +158,7 @@ blandtaltman_length_L1 <- data |>
   coord_cartesian(xlim = c(-20, 20), ylim = c(-15, 15))
 
 ## L2
-blandtaltman_length_L2 <- data |> 
-  distinct(
-    group_ID, .keep_all = T
-  ) |> 
+blandtaltman_length_L2 <- data_group |> 
   ggplot(
     aes(
       x = practice_length_logs_L2,
@@ -162,24 +167,21 @@ blandtaltman_length_L2 <- data |>
   ) +
   geom_point(shape = 1) +
   geom_hline(
-    yintercept = mean(data$practice_length_error_L2),
+    yintercept = mean(data_group$practice_length_error_L2),
     color = 'blue'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_length_error_L2) + (1.96*sd(data$practice_length_error_L2)),
+    yintercept = mean(data_group$practice_length_error_L2) + (1.96*sd(data_group$practice_length_error_L2)),
     color = 'red'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_length_error_L2) - (1.96*sd(data$practice_length_error_L2)),
+    yintercept = mean(data_group$practice_length_error_L2) - (1.96*sd(data_group$practice_length_error_L2)),
     color = 'red'
   ) +
   coord_cartesian(xlim = c(-20, 20), ylim = c(-15, 15))
 
 ## L3
-blandtaltman_length_L3 <- data |> 
-  distinct(
-    school_ID, .keep_all = T
-  ) |> 
+blandtaltman_length_L3 <- data_school |> 
   ggplot(
     aes(
       x = practice_length_logs_L3,
@@ -188,15 +190,15 @@ blandtaltman_length_L3 <- data |>
   ) +
   geom_point(shape = 1) +
   geom_hline(
-    yintercept = mean(data$practice_length_error_L3),
+    yintercept = mean(data_school$practice_length_error_L3),
     color = 'blue'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_length_error_L3) + (1.96*sd(data$practice_length_error_L3)),
+    yintercept = mean(data_school$practice_length_error_L3) + (1.96*sd(data_school$practice_length_error_L3)),
     color = 'red'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_length_error_L3) - (1.96*sd(data$practice_length_error_L3)),
+    yintercept = mean(data_school$practice_length_error_L3) - (1.96*sd(data_school$practice_length_error_L3)),
     color = 'red'
   ) +
   coord_cartesian(xlim = c(-20, 20), ylim = c(-15, 15))
@@ -207,7 +209,7 @@ blandtaltman_length <- blandtaltman_length_L0 +
   blandtaltman_length_L2 +
   blandtaltman_length_L3 +
   plot_layout(ncol = 4, guides = 'collect') 
-blandtaltman_length
+# blandtaltman_length
 
 ## Frequency ----
 ### L0
@@ -257,10 +259,7 @@ blandtaltman_freq_L1 <- data |>
   coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3))
 
 ## L2
-blandtaltman_freq_L2 <- data |> 
-  distinct(
-    group_ID, .keep_all = T
-  ) |> 
+blandtaltman_freq_L2 <- data_group |> 
   ggplot(
     aes(
       x = practice_freq_logs_L2,
@@ -269,24 +268,21 @@ blandtaltman_freq_L2 <- data |>
   ) +
   geom_point(shape = 1) +
   geom_hline(
-    yintercept = mean(data$practice_freq_error_L2),
+    yintercept = mean(data_group$practice_freq_error_L2),
     color = 'blue'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_freq_error_L2) + (1.96*sd(data$practice_freq_error_L2)),
+    yintercept = mean(data_group$practice_freq_error_L2) + (1.96*sd(data_group$practice_freq_error_L2)),
     color = 'red'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_freq_error_L2) - (1.96*sd(data$practice_freq_error_L2)),
+    yintercept = mean(data_group$practice_freq_error_L2) - (1.96*sd(data_group$practice_freq_error_L2)),
     color = 'red'
   ) +
   coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3))
 
 ## L3
-blandtaltman_freq_L3 <- data |> 
-  distinct(
-    school_ID, .keep_all = T
-  ) |> 
+blandtaltman_freq_L3 <- data_school |> 
   ggplot(
     aes(
       x = practice_freq_logs_L3,
@@ -295,15 +291,15 @@ blandtaltman_freq_L3 <- data |>
   ) +
   geom_point(shape = 1) +
   geom_hline(
-    yintercept = mean(data$practice_freq_error_L3),
+    yintercept = mean(data_school$practice_freq_error_L3),
     color = 'blue'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_freq_error_L3) + (1.96*sd(data$practice_freq_error_L3)),
+    yintercept = mean(data_school$practice_freq_error_L3) + (1.96*sd(data_school$practice_freq_error_L3)),
     color = 'red'
   ) +
   geom_hline(
-    yintercept = mean(data$practice_freq_error_L3) - (1.96*sd(data$practice_freq_error_L3)),
+    yintercept = mean(data_school$practice_freq_error_L3) - (1.96*sd(data_school$practice_freq_error_L3)),
     color = 'red'
   ) +
   coord_cartesian(xlim = c(-3, 3), ylim = c(-3, 3))
@@ -314,7 +310,7 @@ blandtaltman_freq <- blandtaltman_freq_L0 +
   blandtaltman_freq_L2 +
   blandtaltman_freq_L3 +
   plot_layout(ncol = 4)
-blandtaltman_freq
+# blandtaltman_freq
 
 ## Duration ----
 ### L0
