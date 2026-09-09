@@ -6,13 +6,34 @@
 source(here::here('analyses/03_descriptive_analyses.R'))
 
 ## Load packages
+library(DescTools)
+library(patchwork)
 
 # Concurrent validity ----
 ## Duration ----
 ### Overall
 cor_dur_overall <- KendallTauB(
-  x = data |> pull(practice_duration_logs_months),
-  y = data |> pull(practice_duration_survey_ranked),
+  x = data |> pull(practice_duration_logs_L0),
+  y = data |> pull(practice_duration_survey_L0),
+  conf.level = 0.95
+)
+
+### Group
+cor_dur_L2 <- KendallTauB(
+  x = data |> distinct(group_ID, .keep_all = T) |> 
+    pull(practice_duration_logs_L2),
+  y = data |> distinct(group_ID, .keep_all = T) |> 
+    pull(practice_duration_survey_L2),
+  conf.level = 0.95
+)
+
+
+### School
+cor_dur_L3 <- KendallTauB(
+  x = data |> distinct(school_ID, .keep_all = T) |> 
+    pull(practice_duration_logs_L3),
+  y = data |> distinct(school_ID, .keep_all = T) |> 
+    pull(practice_duration_survey_L3),
   conf.level = 0.95
 )
 
@@ -114,10 +135,16 @@ cor_all <- cor_all |>
   add_row(
     variable = 'Duration',
     level = 'School',
+    estimate = cor_dur_L3['tau_b'],
+    ci_lower = cor_dur_L3['lwr.ci'],
+    ci_upper = cor_dur_L3['upr.ci'],
   ) |> 
   add_row(
     variable = 'Duration',
     level = 'Teacher',
+    estimate = cor_dur_L2['tau_b'],
+    ci_lower = cor_dur_L2['lwr.ci'],
+    ci_upper = cor_dur_L2['upr.ci'],
   ) |> 
   add_row(
     variable = 'Duration',
@@ -251,9 +278,10 @@ p_cor_dur <- cor_all |>
   ) +
   scale_alpha_identity() +
   scale_y_continuous(
-    limits = c(0, 1), 
+    # limits = c(0, 1), 
     expand = expansion(0)
   ) +
+  coord_cartesian(ylim = c(0, 1)) +
   ggtitle('Duration') +
   ylab('Correlation') +
   xlab('Level') +
@@ -368,7 +396,7 @@ p_cor_all <-
     axis_titles = "collect",
     guides = "collect")
 
-# p_cor_all
+p_cor_all
 # ggsave(
 #   filename = here::here('output/manuscript_tables_figures/plot_reliability.png'),
 #   dpi = 600,

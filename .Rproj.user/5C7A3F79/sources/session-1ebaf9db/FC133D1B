@@ -3,7 +3,7 @@
     "path": "C:/Users/RSCHONE/OneDrive - UvA/Promotie/Paper - teacher reliability/R project/analyses/02_mutating_data_analyses_prep.R",
     "project_path": "analyses/02_mutating_data_analyses_prep.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "3812135639",
     "contents": "",
     "dirty": false,
     "created": 1788349721896.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "28,13",
-        "scrollLine": "16"
+        "cursorPosition": "0,0",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1788349911,
+    "lastKnownWriteTime": 1788937385,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1788349911732,
+    "last_content_update": 1788937385526,
     "read_only": false,
     "read_only_alternatives": []
 }
